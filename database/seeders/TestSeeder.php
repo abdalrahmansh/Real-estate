@@ -121,14 +121,38 @@ class TestSeeder extends Seeder
         $house3->posts()->save($post1);
         // $house1->posts()->associate($post3)->save();
 
-        $post1->users()->attach($user1,['operation_id' => $operation1->id]);
-        $post1->users()->attach($user3,['operation_id' => $operation2->id]);
+        $post1->users()->attach($user1,[
+            'operation_id' => $operation1->id,
+            'price' => 100,
+        ]);
+        $post1->users()->attach($user3,[
+            'operation_id' => $operation2->id,           
+            'price' => 100,
 
-        $post2->users()->attach($user1,['operation_id' => $operation1->id]);
-        $post2->users()->attach($user2,['operation_id' => $operation2->id]);
+        ]);
 
-        $post3->users()->attach($user2,['operation_id' => $operation1->id]);
-        $post3->users()->attach($user3,['operation_id' => $operation2->id]);
+        $post2->users()->attach($user1,[
+            'operation_id' => $operation1->id,           
+            'price' => 200,
+
+    
+        ]);
+        $post2->users()->attach($user2,[
+            'operation_id' => $operation2->id,           
+            'price' => 200,
+
+        ]);
+
+        $post3->users()->attach($user2,[
+            'operation_id' => $operation1->id,          
+            'price' => 300,
+
+        ]);
+        $post3->users()->attach($user3,[
+            'operation_id' => $operation2->id,          
+            'price' => 300,
+
+        ]);
 
     }
 }

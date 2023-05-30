@@ -33,6 +33,7 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('authToken')->accessToken;
+        auth()->login($user);
 
         return response(['user' => $user, 'access_token' => $token]);
     }
@@ -49,6 +50,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            session()->regenerate();
             $token = $user->createToken('authToken')->accessToken;
             return response(['user' => $user, 'access_token' => [$token,'token' => $token->token]]);
         }
@@ -75,7 +77,7 @@ class AuthController extends Controller
     }
 
     $accessToken->revoke();
-
+    auth()->logout();
     return response()->json(['message' => 'Successfully logged out']);
 }
 }

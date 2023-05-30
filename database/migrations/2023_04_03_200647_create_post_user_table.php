@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('operation_id');
             $table->unsignedBigInteger('user_id');
+            $table->integer('price')->nullable();
+            $table->string('duration')->nullable();
+            $table->boolean('is_acceptable')->nullable();
             $table->timestamps();
 
             $table->foreign('post_id')->references('id')->on('posts');

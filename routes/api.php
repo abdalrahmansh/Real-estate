@@ -24,3 +24,6 @@ Route::get('/lands/{land}', [TestController::class , 'a']);
 Route::get('/my-posts', [TestController::class , 'show_my_info']);
 Route::get('/post', [TestController::class , 'show_user_info']);
 Route::get('/test', [TestController::class , 'show_all_info']);
+
+Route::get('/houses_post', [TestController::class , 'houses_post']);
+Route::get('/cars_post', [TestController::class , 'cars_post']);
