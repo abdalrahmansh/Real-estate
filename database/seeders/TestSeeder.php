@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Car;
 use App\Models\House;
+use App\Models\Land;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Image;
@@ -83,6 +85,54 @@ class TestSeeder extends Seeder
                     'description' => 'Near of a pharmacy and a hospital, no need for fixing or any furniture, the house is ready.',
         ]); 
 
+
+        // CARS SECTION
+
+        $car1 = Car::create([
+            'name' => 'BMW',
+            'color' => 'Black',
+            'year' => '2024',
+            'model' => 'X5',
+            'is_new' => true,
+            'description' => 'description',
+        ]);
+
+        $car2 = Car::create([
+            'name' => 'BMW',
+            'color' => 'Green',
+            'year' => '2024',
+            'model' => 'X5',
+            'is_new' => true,
+            'description' => 'description',
+        ]);
+
+        $car3 = Car::create([
+            'name' => 'BMW',
+            'color' => 'Orange',
+            'year' => '2024',
+            'model' => 'X5',
+            'is_new' => true,
+            'description' => 'description',
+        ]);
+
+
+        // CARS SECTION
+
+        $land1 = Land::create([
+            'space' => '6000',
+            'description' => 'description',
+        ]);
+
+        $land2 = Land::create([
+            'space' => '3000',
+            'description' => 'description',
+        ]);
+
+        $land3 = Land::create([
+            'space' => '4000',
+            'description' => 'description',
+        ]);
+
         // IMAGES SECTION 
 
         $image1 = new Image(['img' => 'https://echinest.sirv.com/Estates/download-23.jpg']);
@@ -100,6 +150,14 @@ class TestSeeder extends Seeder
         $post1 = new Post(['post_date' => now()]);
         $post2 = new Post(['post_date' => now()]);
         $post3 = new Post(['post_date' => now()]);
+
+        $post4 = new Post(['post_date' => now()]);
+        $post5 = new Post(['post_date' => now()]);
+        $post6 = new Post(['post_date' => now()]);
+
+        $post7 = new Post(['post_date' => now()]);
+        $post8 = new Post(['post_date' => now()]);
+        $post9 = new Post(['post_date' => now()]);
 
 
         // POST_USER SECTION
@@ -121,6 +179,15 @@ class TestSeeder extends Seeder
         $house3->posts()->save($post1);
         // $house1->posts()->associate($post3)->save();
 
+        $car1->posts()->save($post6);
+        $car2->posts()->save($post5);
+        $car3->posts()->save($post4);
+
+        $land1->posts()->save($post9);
+        $land2->posts()->save($post8);
+        $land3->posts()->save($post7);
+
+
         $post1->users()->attach($user1,[
             'operation_id' => $operation1->id,
             'price' => 100,
@@ -128,29 +195,86 @@ class TestSeeder extends Seeder
         $post1->users()->attach($user3,[
             'operation_id' => $operation2->id,           
             'price' => 100,
-
         ]);
 
         $post2->users()->attach($user1,[
             'operation_id' => $operation1->id,           
             'price' => 200,
-
-    
         ]);
         $post2->users()->attach($user2,[
             'operation_id' => $operation2->id,           
             'price' => 200,
-
         ]);
 
         $post3->users()->attach($user2,[
             'operation_id' => $operation1->id,          
             'price' => 300,
-
         ]);
         $post3->users()->attach($user3,[
             'operation_id' => $operation2->id,          
             'price' => 300,
+        ]);
+
+        $post4->users()->attach($user2,[
+            'operation_id' => $operation1->id,          
+            'price' => 300,
+        ]);
+        $post4->users()->attach($user3,[
+            'operation_id' => $operation2->id,          
+            'price' => 300,
+
+        ]);
+        $post5->users()->attach($user2,[
+            'operation_id' => $operation1->id,          
+            'price' => 300,
+
+        ]);
+        $post5->users()->attach($user3,[
+            'operation_id' => $operation2->id,          
+            'price' => 300,
+
+        ]);
+        $post6->users()->attach($user2,[
+            'operation_id' => $operation1->id,          
+            'price' => 3100,
+
+        ]);
+        $post6->users()->attach($user3,[
+            'operation_id' => $operation2->id,          
+            'price' => 3100,
+
+        ]);
+
+        $post7->users()->attach($user2,[
+            'operation_id' => $operation1->id,          
+            'price' => 3300,
+
+        ]);
+        $post7->users()->attach($user3,[
+            'operation_id' => $operation2->id,          
+            'price' => 3300,
+
+        ]);
+
+        $post8->users()->attach($user2,[
+            'operation_id' => $operation1->id,          
+            'price' => 3900,
+
+        ]);
+
+        $post8->users()->attach($user3,[
+            'operation_id' => $operation2->id,          
+            'price' => 3900,
+
+        ]);
+        $post9->users()->attach($user2,[
+            'operation_id' => $operation1->id,          
+            'price' => 4000,
+
+        ]);
+        $post9->users()->attach($user3,[
+            'operation_id' => $operation2->id,          
+            'price' => 4000,
 
         ]);
 
