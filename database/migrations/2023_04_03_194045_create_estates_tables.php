@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('space')->nullable();
             $table->string('direction')->nullable();
             $table->string('description')->nullable();
-            $table->integer('no_rooms')->nullable();
+            $table->integer('room_number')->nullable();
             $table->timestamps();
         });
 

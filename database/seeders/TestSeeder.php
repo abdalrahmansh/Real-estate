@@ -41,6 +41,7 @@ class TestSeeder extends Seeder
         $operation1 = Operation::create(['name' => 'Sell','notes' => 'nothing']); 
         $operation2 = Operation::create(['name' => 'Buy','notes' => 'nothing']); 
         $operation3 = Operation::create(['name' => 'Rent','notes' => 'nothing']);
+        $operation3 = Operation::create(['name' => 'Renting','notes' => 'nothing']);
 
         // HOUSES SECTION 
 

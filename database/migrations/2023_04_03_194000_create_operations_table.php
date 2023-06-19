@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('operations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('notes')->nullable();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }
