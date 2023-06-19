@@ -11,22 +11,20 @@ class Image extends Model
 
     public $guarded = [];
 
-    
-    public function houses()
-    {
-        return $this->hasMany(Post::class);
-    }
+    public function house()
+{
+    return $this->belongsTo(House::class, 'imageable_id');
+}
 
-    public function cars()
-    {
-        return $this->hasMany(Post::class);
-    }
+public function car()
+{
+    return $this->belongsTo(Car::class, 'imageable_id');
+}
 
-    public function lands()
-    {
-        return $this->hasMany(Post::class);
-    }
-
+public function land()
+{
+    return $this->belongsTo(Land::class, 'imageable_id');
+}
     // public function imageable()
     // {
     //     return $this->morphTo();

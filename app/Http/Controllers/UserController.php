@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -21,18 +24,39 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'location' => 'required',
+        $validator = Validator::make($request->only(['name', 'email', 'password']), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
         ]);
         
-        $user = User::create($request->all());
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        
+        $data = $request->all();
+        $data['password'] = bcrypt($data['password']);
+
+        $user = User::create($data);
 
         return response()->json($user, 201);
     }
 
     public function update(Request $request, User $user)
     {
-        $user->update($request->all());
+        $validator = Validator::make($request->only(['name', 'email', 'password']), [
+            'name' => 'required|string|max:255',
+            'email' => ['required','email',Rule::unique('users')->ignore($user->id)],
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $request->all();
+        $data['password'] = bcrypt($data['password']);
+        $user->update($data);
 
         return response()->json($user);
     }

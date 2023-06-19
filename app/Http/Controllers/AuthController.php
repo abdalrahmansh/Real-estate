@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * Register a new user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -26,7 +22,7 @@ class AuthController extends Controller
             return response(['errors'=>$validator->errors()->all()], 422);
         }
 
-        $user = \App\Models\User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password)
@@ -38,20 +34,64 @@ class AuthController extends Controller
         return response(['user' => $user, 'access_token' => $token]);
     }
 
-    /**
-     * Login and create token.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]);
+        }
+
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Token revoked successfully',
+        ]);
+    }
+    
+    
+    public function user(Request $request)
+    {
+        return response()->json($request->user());
+    }
+}
+
+
+
+/*
+
+
+public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            session()->regenerate();
+            // $user = Auth::user();
+            $user = $request->user();
+
+            // session()->regenerate();
             $token = $user->createToken('authToken')->accessToken;
+                    $user = $request->user();
+                    // return response()->json([
+                    //     'user' => $user,
+                    //     'access_token' => $token,
+                    // ]);
             return response(['user' => $user, 'access_token' => [$token,'token' => $token->token]]);
         }
 
@@ -64,20 +104,19 @@ class AuthController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function logout(Request $request)
-{
-    if (!auth()->check()) {
-        return response()->json(['message' => 'User not authenticated'], 401);
-    }
+    // public function logout(Request $request)
+    // {
+        // if (!auth()->check()) {
+        //     return response()->json(['message' => 'User not authenticated'], 401);
+        // }
 
-    $accessToken = $request->user()->token();
+        // $accessToken = $request->user()->token();
 
-    if (!$accessToken) {
-        return response()->json(['message' => 'Access token not found'], 404);
-    }
+    //     if (!$accessToken) {
+    //         return response()->json(['message' => 'Access token not found'], 404);
+    //     }
 
-    $accessToken->revoke();
-    auth()->logout();
-    return response()->json(['message' => 'Successfully logged out']);
-}
-}
+    //     $accessToken->revoke();
+    //     auth()->logout();
+    //     return response()->json(['message' => 'Successfully logged out']);
+    // }
