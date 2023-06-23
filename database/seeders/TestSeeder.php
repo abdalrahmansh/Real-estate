@@ -11,6 +11,7 @@ use App\Models\Image;
 use App\Models\Operation;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 
 class TestSeeder extends Seeder
 {
@@ -20,11 +21,15 @@ class TestSeeder extends Seeder
     public function run(): void
     {
         $user1 = User::create([
-            'name' => 'John',
-            'email' => 'John@test.com',
+            'name' => 'Admin',
+            'email' => 'admin@test.com',
             'phone' => '123456789',
             'password' => bcrypt('password'),
         ]);
+        $token = $user1->createToken('authToken',['admin'])->plainTextToken;
+        $hashedToken = hash('sha256', $token);
+        echo "Token: " . $token . "\n";
+
         $user2 = User::create([
             'name' => 'David',
             'email' => 'David@test.com',
@@ -38,10 +43,10 @@ class TestSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        $operation1 = Operation::create(['name' => 'Sell','notes' => 'nothing']); 
-        $operation2 = Operation::create(['name' => 'Buy','notes' => 'nothing']); 
-        $operation3 = Operation::create(['name' => 'Rent','notes' => 'nothing']);
-        $operation3 = Operation::create(['name' => 'Renting','notes' => 'nothing']);
+        $operation1 = Operation::create(['name' => 'Sell','description' => 'nothing']); 
+        $operation2 = Operation::create(['name' => 'Buy','description' => 'nothing']); 
+        $operation3 = Operation::create(['name' => 'Rent','description' => 'nothing']);
+        $operation3 = Operation::create(['name' => 'Renting','description' => 'nothing']);
 
         // HOUSES SECTION 
 
@@ -49,7 +54,7 @@ class TestSeeder extends Seeder
                     'location' => 'المارتيني',
                     'floor' => 'أول',
                     'space' => '200',
-                    'no_rooms' => '3',
+                    'room_number' => '3',
                     'direction' => 'غربي',
                     'description' => 'Near of a pharmacy and a hospital, no need for fixing or any furniture, the house is ready.',
         ]);
@@ -57,7 +62,7 @@ class TestSeeder extends Seeder
                     'location' => 'الأشرفية',
                     'floor' => 'ثالث',
                     'space' => '200',
-                    'no_rooms' => '4',
+                    'room_number' => '4',
                     'direction' => 'شرقي شمالي',
                     'description' => 'Near of a pharmacy and a hospital, no need for fixing or any furniture, the house is ready.',
         ]);
@@ -65,7 +70,7 @@ class TestSeeder extends Seeder
                     'location' => 'الأعظمبة',
                     'floor' => 'رابع',
                     'space' => '100',
-                    'no_rooms' => '3',
+                    'room_number' => '3',
                     'direction' => 'شمالي شرقي',
                     'description' => 'Near of a pharmacy and a hospital, no need for fixing or any furniture, the house is ready.',
         ]);
@@ -73,7 +78,7 @@ class TestSeeder extends Seeder
                     'location' => 'سيف الدولة',
                     'floor' => 'خامس',
                     'space' => '300',
-                    'no_rooms' => '3',
+                    'room_number' => '3',
                     'direction' => 'شرقي',
                     'description' => 'Near of a pharmacy and a hospital, no need for fixing or any furniture, the house is ready.',
         ]);
@@ -81,7 +86,7 @@ class TestSeeder extends Seeder
                     'location' => 'السليمانية',
                     'floor' => 'أول',
                     'space' => '200',
-                    'no_rooms' => '3',
+                    'room_number' => '3',
                     'direction' => 'شمالي',
                     'description' => 'Near of a pharmacy and a hospital, no need for fixing or any furniture, the house is ready.',
         ]); 
