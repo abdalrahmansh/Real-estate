@@ -18,12 +18,25 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->integer('price')->nullable();
             $table->string('duration')->nullable();
-            $table->boolean('is_accepted')->nullable();
+            $table->boolean('is_accepted')->default(false);
             $table->timestamps();
 
-            $table->foreign('post_id')->references('id')->on('posts');
-            $table->foreign('operation_id')->references('id')->on('operations');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('post_id')
+                ->references('id')
+                ->on('posts')      
+                ->onDelete('cascade');
+                ->onUpdate('cascade');
+            
+            $table->foreign('operation_id')
+                ->references('id')
+                ->on('operations')
+                ->onDelete('cascade');
+                ->onUpdate('cascade');
+
+            $table->foreign('user_id')
+            ->references('id')
+            ->on('users')
+            ->onDelete('cascade');
         });
 
     }
