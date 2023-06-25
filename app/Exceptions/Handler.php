@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
             return response()->json(['message' => 'Method Not Allowed, unauthorized'], 405);
         }
         if ($exception instanceof NotFoundHttpException || $exception instanceof ModelNotFoundException) {
-            return response()->json(['message' => 'Endpoint not found'], 404);
+            return response()->json(['message' => 'Endpoint not found, or wrong ID'], 404);
         }
     
     
