@@ -28,7 +28,8 @@ class AuthController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        $token = $user->createToken('authToken')->accessToken;
+        $token = $user->createToken('authToken',['user'])->plainTextToken;
+        $hashedToken = hash('sha256', $token);
         auth()->login($user);
 
         return response(['user' => $user, 'access_token' => $token]);
@@ -43,7 +44,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($request->only('email', 'password'))) {
             $user = Auth::user();
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('auth_token',['user'])->plainTextToken;
 
             return response()->json([
                 'access_token' => $token,
@@ -73,50 +74,3 @@ class AuthController extends Controller
 }
 
 
-
-/*
-
-
-public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            // $user = Auth::user();
-            $user = $request->user();
-
-            // session()->regenerate();
-            $token = $user->createToken('authToken')->accessToken;
-                    $user = $request->user();
-                    // return response()->json([
-                    //     'user' => $user,
-                    //     'access_token' => $token,
-                    // ]);
-            return response(['user' => $user, 'access_token' => [$token,'token' => $token->token]]);
-        }
-
-        return response(['error' => 'Invalid credentials'], 401);
-    }
-
-    /**
-     * Logout and revoke token.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    // public function logout(Request $request)
-    // {
-        // if (!auth()->check()) {
-        //     return response()->json(['message' => 'User not authenticated'], 401);
-        // }
-
-        // $accessToken = $request->user()->token();
-
-    //     if (!$accessToken) {
-    //         return response()->json(['message' => 'Access token not found'], 404);
-    //     }
-
-    //     $accessToken->revoke();
-    //     auth()->logout();
-    //     return response()->json(['message' => 'Successfully logged out']);
-    // }

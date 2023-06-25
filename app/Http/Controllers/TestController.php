@@ -3,41 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\House;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class TestController extends Controller
 {
-
-    public function houses_post()
-    {
-        $data = DB::table('users')
-        ->join('post_user', 'users.id',  'post_user.user_id')
-        ->join('posts', 'post_user.post_id', 'posts.id')
-        ->join('houses', 'houses.id', 'posts.postsable_id')
-        ->where('posts.postsable_type', 'App\Models\House')
-        ->join('operations', 'post_user.operation_id', 'operations.id')
-        ->select('users.name AS The Owner','houses.location','houses.space','houses.direction','houses.floor','houses.no_rooms','houses.description', DB::raw('DATE_FORMAT(posts.post_date, "%d") AS post_day'))
-        ->where('operations.name', 'like', '%buy%')
-        ->get();
-
-        return response()->json($data);
-    }
-
-    public function cars_post()
-    {
-        $data = DB::table('users')
-        ->join('post_user', 'users.id',  'post_user.user_id')
-        ->join('posts', 'post_user.post_id', 'posts.id')
-        ->join('cars', 'cars.id', 'posts.postsable_id')
-        ->where('posts.postsable_type', 'App\Models\House')
-        ->join('operations', 'post_user.operation_id', 'operations.id')
-        ->select('users.name AS The Owner','cars.description','cars.color','cars.model','cars.name','cars.year','cars.is_new')
-        ->where('operations.name', 'like', '%buy%')
-        ->get();
-
-        return response()->json($data);
-    }
+    
 
     public function houses_filter(Request $request)
     {

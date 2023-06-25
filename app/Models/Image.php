@@ -29,4 +29,11 @@ public function land()
     // {
     //     return $this->morphTo();
     // }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'imageable_id',
+        'imageable_type'
+    ];
 }

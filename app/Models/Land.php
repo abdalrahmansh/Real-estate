@@ -9,7 +9,7 @@ class Land extends Model
 {
     use HasFactory;
 
-    public function posts()
+    public function post()
     {
         return $this->morphMany(Post::class, 'postsable');
     }
@@ -20,5 +20,10 @@ class Land extends Model
     }
 
     public $guarded = [];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
 }

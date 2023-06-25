@@ -12,7 +12,7 @@ class Post extends Model
 
     public $guarded = [];
 
-    public function postable()
+    public function postsable()
     {
         return $this->morphTo();
     }
@@ -20,12 +20,19 @@ class Post extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'post_user', 'post_id', 'user_id');
+        return $this->belongsToMany(User::class, 'post_user');
     }
 
     public function operations()
     {
-        return $this->belongsToMany(Operation::class);
+        return $this->belongsToMany(Operation::class, 'post_user');
     }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'postsable_id',
+        'postsable_type'
+    ];
 
 }

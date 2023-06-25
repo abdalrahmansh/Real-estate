@@ -14,7 +14,7 @@ class User extends Authenticatable
 
     public function posts()
     {
-        return $this->belongsToMany(User::class, 'post_user', 'post_id', 'user_id');
+        return $this->belongsToMany(User::class, 'post_user');
     }
 
     /**
@@ -39,6 +39,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'created_at',
+        'updated_at',
+        'email_verified_at',
     ];
 
     /**

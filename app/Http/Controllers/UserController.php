@@ -42,8 +42,12 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found.'], 404);
+        }
         $validator = Validator::make($request->only(['name', 'email', 'password']), [
             'name' => 'required|string|max:255',
             'email' => ['required','email',Rule::unique('users')->ignore($user->id)],
@@ -58,7 +62,7 @@ class UserController extends Controller
         $data['password'] = bcrypt($data['password']);
         $user->update($data);
 
-        return response()->json($user);
+        return response()->json($user, 200);
     }
 
     public function destroy(User $user)

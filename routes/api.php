@@ -1,71 +1,66 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TestController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\HouseController;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('register', [AuthController::class , 'register']);
+Route::post('login', [AuthController::class , 'login'])->name('login');
+Route::middleware(['auth:api'])->post('logout', [AuthController::class , 'logout']);
 
 // Routes for managing users
 Route::group(['prefix' => 'users'], function () {
     // Get all users
-    Route::get('/', [UserController::class,'index']);
+    Route::get('/', [UserController::class,'index'])->middleware(['auth:api','admin']);
 
     // Get a specific user
     Route::get('/{user}', [UserController::class,'show']);
 
-    // Create a new user
-    Route::post('/add', [UserController::class,'store']);
+    // // Create a new user
+    // Route::post('/add', [UserController::class,'store'])->middleware(['auth:api']);
 
     // Update an existing user
-    Route::post('edit/{user}', [UserController::class,'update']);
+    Route::post('edit/{user}', [UserController::class,'update'])->middleware(['auth:api','user.ownership']);
 
     // Delete a user
-    Route::post('delete/{user}', [UserController::class,'destroy']);
+    Route::post('delete/{user}', [UserController::class,'destroy'])->middleware(['auth:api','user.ownership']);;
 });
 
 // Routes for managing posts
 Route::group(['prefix' => 'posts'], function () {
     // Get all posts
-    Route::get('/', [PostController::class,'index']);
+    Route::get('/', [PostController::class,'index'])->middleware(['auth:api','admin']);
+
+    // Get accepted posts
+    Route::get('/accepted/{estate}', [PostController::class,'acceptedPosts']);
 
     // Get a specific post
     Route::get('/{post}', [PostController::class,'show']);
 
     // Create a new post
-    Route::post('/add', [PostController::class,'store']);
+    // Route::post('/add', [PostController::class,'store'])->middleware(['auth:api']);
 
     // Update an existing post
-    Route::post('edit/{post}', [PostController::class,'update']);
+    // Route::post('edit/{post}', [PostController::class,'update'])->middleware(['auth:api', 'post.ownership']);
 
     // Delete a post
-    Route::post('delete/{post}', [PostController::class,'destroy']);
-});
+    Route::post('delete/{post}', [PostController::class,'destroy'])->middleware(['auth:api', 'post.ownership']);
 
-// Route::apiResource('houses', 'App\Http\Controllers\HouseController');
-// Route::apiResource('cars', 'App\Http\Controllers\CarController');
-// Route::apiResource('lands', 'App\Http\Controllers\LandController');
-// Route::apiResource('operations', 'App\Http\Controllers\OperationController');
-// Route::apiResource('posts', 'App\Http\Controllers\PostController');
-// Route::apiResource('users', 'App\Http\Controllers\UserController');
+    // Filter houses posts
+    Route::post('filter/houses', [HouseController::class,'filter_houses']);
 
-Route::post('register', [AuthController::class , 'register']);
-Route::post('login', [AuthController::class , 'login'])->name('login');
-Route::middleware(['api'])->post('logout', [AuthController::class , 'logout']);
+    // Filter cars posts
+    // Route::post('filter/cars', [PostController::class,'filter_cars']);
 
-Route::get('/lands/{land}', [TestController::class , 'a']);
-Route::get('/my-posts', [TestController::class , 'show_my_info']);
-Route::get('/post', [TestController::class , 'show_user_info']);
-Route::get('/test', [TestController::class , 'show_all_info']);
-
-Route::middleware(['auth:api'])->group(function () {
-    Route::get('/cars_post', [TestController::class , 'cars_post']);
-    Route::get('/lands_post', [TestController::class , 'lands_post']);
-    Route::get('/houses_post', [TestController::class , 'houses_post']);
+    // Filter lands posts
+    // Route::post('filter/lands', [PostController::class,'filter_lands']);
     
+    // accepted posts
+    Route::post('accept/{post}/{user}', [PostController::class,'accept'])->middleware(['auth:api','admin']);
 });
+
+Route::post('houses/add', [HouseController::class,'add_house'])->middleware(['auth:api']);
+Route::post('houses/edit/{post}', [HouseController::class,'update_house'])->middleware(['auth:api', 'post.ownership']);
+
