@@ -21,6 +21,13 @@ class House extends Model
 
     public $guarded = [];
 
+    // protected $appends = ['imageable_type'];
+    
+    // public function getImageableTypeAttribute()
+    // {
+    //     return $this->imageable_type;
+    // }
+
     protected $hidden = [
         'created_at',
         'updated_at',

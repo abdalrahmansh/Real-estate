@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\CarController;
+use App\Http\Controllers\LandController;
+use App\Http\Controllers\NotificationsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -31,19 +34,16 @@ Route::group(['prefix' => 'users'], function () {
 // Routes for managing posts
 Route::group(['prefix' => 'posts'], function () {
     // Get all posts
-    Route::get('/', [PostController::class,'index'])->middleware(['auth:api','admin']);
+    Route::get('/', [PostController::class,'allPosts'])->middleware(['auth:api','admin']);
+    
+    // Get all posts that need admin review
+    Route::get('/review', [PostController::class,'postsNeedReview'])->middleware(['auth:api','admin']);
 
     // Get accepted posts
     Route::get('/accepted/{estate}', [PostController::class,'acceptedPosts']);
 
     // Get a specific post
-    Route::get('/{post}', [PostController::class,'show']);
-
-    // Create a new post
-    // Route::post('/add', [PostController::class,'store'])->middleware(['auth:api']);
-
-    // Update an existing post
-    // Route::post('edit/{post}', [PostController::class,'update'])->middleware(['auth:api', 'post.ownership']);
+    Route::get('/{post}', [PostController::class,'show'])->name('posts.show');
 
     // Delete a post
     Route::post('delete/{post}', [PostController::class,'destroy'])->middleware(['auth:api', 'post.ownership']);
@@ -57,10 +57,22 @@ Route::group(['prefix' => 'posts'], function () {
     // Filter lands posts
     // Route::post('filter/lands', [PostController::class,'filter_lands']);
     
-    // accepted posts
+    // accept post
     Route::post('accept/{post}/{user}', [PostController::class,'accept'])->middleware(['auth:api','admin']);
+    
+    // reject post
+    Route::post('reject/{post}/{user}', [PostController::class,'reject'])->middleware(['auth:api','admin']);
 });
 
 Route::post('houses/add', [HouseController::class,'add_house'])->middleware(['auth:api']);
 Route::post('houses/edit/{post}', [HouseController::class,'update_house'])->middleware(['auth:api', 'post.ownership']);
 
+Route::post('cars/add', [CarController::class,'add_car'])->middleware(['auth:api']);
+Route::post('cars/edit/{post}', [CarController::class,'update_car'])->middleware(['auth:api', 'post.ownership']);
+
+Route::post('lands/add', [LandController::class,'add_land'])->middleware(['auth:api']);
+Route::post('lands/edit/{post}', [LandController::class,'update_land'])->middleware(['auth:api', 'post.ownership']);
+
+
+Route::get('/notifications', [NotificationsController::class, 'showUnreadNotifications'])->middleware('auth:api');
+Route::post('/notifications/{notification}', [NotificationsController::class, 'readNotification'])->middleware('auth:api');

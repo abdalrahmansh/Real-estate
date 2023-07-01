@@ -28,6 +28,13 @@ class Post extends Model
         return $this->belongsToMany(Operation::class, 'post_user');
     }
 
+    // protected $appends = ['postsable_type'];
+    
+    // public function getPostsableTypeAttribute()
+    // {
+    //     return $this->postsable_type;
+    // }
+
     protected $hidden = [
         'created_at',
         'updated_at',

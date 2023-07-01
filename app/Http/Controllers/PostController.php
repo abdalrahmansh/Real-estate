@@ -6,12 +6,22 @@ use App\Models\PostUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    public function index()
+    public function allPosts()
     {
         $allPosts = PostUser::with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+            ->get();
+
+        return response()->json($allPosts);
+    }
+
+    public function postsNeedReview()
+    {
+        $allPosts = PostUser::with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+            ->where('post_user.is_accepted',0)
             ->get();
 
         return response()->json($allPosts);
@@ -20,7 +30,8 @@ class PostController extends Controller
     public function acceptedPosts(Request $request)
     {
         $estate = $this->getModel($request->estate);
-        $acceptedRecords = PostUser::where('is_accepted', 1)->where('operation_id', 1)
+        $acceptedRecords = PostUser::where('is_accepted', 1)
+            // ->where('operation_id', 1)
             ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
             ->whereHas('post.postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
@@ -30,16 +41,10 @@ class PostController extends Controller
 
     public function show($post)
     {
-        $post = PostUser::where('post_id', $post)->where('operation_id', 1)
+        $post = PostUser::where('post_id', $post)
+            // ->where('operation_id', 1)
             ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
             ->get();
-
-        return response()->json($post);
-    }
-
-    public function update(Request $request, Post $post)
-    {
-        $post->update($request->all());
 
         return response()->json($post);
     }
@@ -55,6 +60,10 @@ class PostController extends Controller
         // }
         // loop through each post
         foreach ($post_user as $post) {
+            // delete the related images from the storage
+            foreach ($post->post->postsable->images as $image) {
+                Storage::delete($image->path);
+            }
             // delete the related images
             $post->post->postsable->images()->delete();
 
@@ -77,10 +86,26 @@ class PostController extends Controller
         ->wherePivot('user_id', $user)
         ->wherePivot('post_id', $post)
         ->update(['is_accepted' => 1]);
+        $post = PostUser::find($post);
+        // Send a notification to the author
+        $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'accepted'));
 
         return response()->json(['message' => 'Post accepted successfully']);
     }
-
+    public function reject($post, $user)
+    {
+        User::find($user)
+        ->posts()
+        ->wherePivot('user_id', $user)
+        ->wherePivot('post_id', $post)
+        ->update(['is_accepted' => -1]);
+        $post = PostUser::find($post);
+    
+        // Send a notification to the post author
+        $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'rejected'));
+    
+        return response()->json(['message' => 'Post rejected successfully']);
+    }
     protected function getModel(string $modelType): string
     {
         $className = "App\\Models\\" . ucfirst(class_basename($modelType));
