@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone')->default('123456789');
-            $table->string('img')->default('https://echinest.sirv.com/Accounts/profile-icon-9.png');
+            $table->string('phone')->nullable();
+            $table->string('img')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

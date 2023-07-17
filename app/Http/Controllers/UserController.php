@@ -24,22 +24,33 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->only(['name', 'email', 'password']), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
+            'phone' => 'required|string',
+            'img' => 'required|image',
         ]);
         
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
         
-        $data = $request->all();
+        $path = $request->img->store('public');
+        $filename = basename($path);
+        $url = asset('storage/' . $filename);
+
+        $data = $request->except('password_confirmation');
         $data['password'] = bcrypt($data['password']);
+        $data['img'] = $url;
 
         $user = User::create($data);
 
-        return response()->json($user, 201);
+        $token = $user->createToken('authToken',['user'])->plainTextToken;
+        $hashedToken = hash('sha256', $token);
+        auth()->login($user);
+
+        return response(['user' => $user, 'access_token' => $token]);
     }
 
     public function update(Request $request, $id)
@@ -48,18 +59,26 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['error' => 'User not found.'], 404);
         }
-        $validator = Validator::make($request->only(['name', 'email', 'password']), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => ['required','email',Rule::unique('users')->ignore($user->id)],
             'password' => 'required|string|min:8',
+            'phone' => 'required|string',
+            'img' => 'required|image',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $data = $request->all();
+        $path = $request->img->store('public');
+        $filename = basename($path);
+        $url = asset('storage/' . $filename);
+
+        $data = $request->except('password_confirmation');
         $data['password'] = bcrypt($data['password']);
+        $data['img'] = $url;
+
         $user->update($data);
 
         return response()->json($user, 200);
@@ -67,6 +86,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        \Illuminate\Support\Facades\Storage::delete($user->img);
         $user->delete();
 
         return response()->json(['message' => 'user deleted successfully'], 200);

@@ -6,6 +6,7 @@ use App\Models\PostUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -27,6 +28,15 @@ class PostController extends Controller
         return response()->json($allPosts);
     }
 
+    public function postsNeedReviewToReserving()
+    {
+        $allPosts = PostUser::with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+            ->where('post_user.operation_id',5)
+            ->get();
+
+        return response()->json($allPosts);
+    }
+
     public function acceptedPosts(Request $request)
     {
         $estate = $this->getModel($request->estate);
@@ -37,6 +47,16 @@ class PostController extends Controller
                 $query->where('postsable_type', $estate);
             })->get();
         return response()->json($acceptedRecords);
+    }
+
+    public function aUserPosts($user)
+    {
+        $posts = PostUser::where('user_id', $user)
+            // ->where('operation_id', 1)
+            ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+            ->get();
+
+        return response()->json($posts);
     }
 
     public function show($post)
@@ -106,6 +126,52 @@ class PostController extends Controller
     
         return response()->json(['message' => 'Post rejected successfully']);
     }
+
+    public function acceptReserve($post, $user)
+    {
+        User::find($user)
+        ->posts()
+        ->wherePivot('user_id', $user)
+        ->wherePivot('post_id', $post)
+        ->update(['is_accepted' => 1]);
+        $post = PostUser::find($post);
+        // Send a notification to the author
+        $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'accepted'));
+
+        return response()->json(['message' => 'Post accepted successfully']);
+    }
+
+    public function rejectReserve($post, $user)
+    {
+        User::find($user)
+        ->posts()
+        ->wherePivot('user_id', $user)
+        ->wherePivot('post_id', $post)
+        ->update(['is_accepted' => -1]);
+        $post = PostUser::find($post);
+    
+        // Send a notification to the post author
+        $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'rejected'));
+    
+        return response()->json(['message' => 'Post rejected successfully']);
+    }
+
+    public function reserve($post)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user(); // or however you get the ID of the current user
+        $existingReservation = PostUser::where('post_id', $post)->where('user_id', $user->id)->where('operation_id', 5)->first();
+        if($existingReservation != null){
+            return response()->json(['message' => 'You have already reserved this post']);
+        }
+        $post = PostUser::where('post_id', $post)->first();
+        $newPost = $post->replicate();
+        $newPost->operation_id = 5;
+        $newPost->is_accepted = 0;
+        $newPost->user_id = $user->id;
+        $newPost->save();
+        return response()->json(['message' => 'Post reserved successfully']);
+    }
+
     protected function getModel(string $modelType): string
     {
         $className = "App\\Models\\" . ucfirst(class_basename($modelType));

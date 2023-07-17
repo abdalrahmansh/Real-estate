@@ -9,6 +9,8 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Image;
 use App\Models\Operation;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Log;
@@ -20,10 +22,14 @@ class TestSeeder extends Seeder
      */
     public function run(): void
     {
+        $filename = 'avatar.jpg';
+        $imagePath = url('storage/' . $filename);
+
         $user1 = User::create([
             'name' => 'Admin',
             'email' => 'admin@test.com',
             'phone' => '123456789',
+            'img' => $imagePath,
             'password' => bcrypt('password'),
         ]);
         $token = $user1->createToken('authToken',['admin'])->plainTextToken;
@@ -34,12 +40,14 @@ class TestSeeder extends Seeder
             'name' => 'David',
             'email' => 'David@test.com',
             'phone' => '123456789',
+            'img' => $imagePath,
             'password' => bcrypt('password'),
         ]);
         $user3 = User::create([
             'name' => 'Adam',
             'email' => 'Adam@test.com',
             'phone' => '123456789',
+            'img' => $imagePath,
             'password' => bcrypt('password'),
         ]);
 
@@ -47,6 +55,7 @@ class TestSeeder extends Seeder
         $operation2 = Operation::create(['name' => 'Buy','description' => 'nothing']); 
         $operation3 = Operation::create(['name' => 'Rent','description' => 'nothing']);
         $operation3 = Operation::create(['name' => 'Renting','description' => 'nothing']);
+        $operation3 = Operation::create(['name' => 'Reserve','description' => 'nothing']);
 
         // HOUSES SECTION 
 

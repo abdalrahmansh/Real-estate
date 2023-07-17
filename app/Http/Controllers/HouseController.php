@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Image;
 use App\Models\Post;
+use App\Models\PostUser;
 use Illuminate\Http\Request;
 use App\Models\House;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class HouseController extends Controller
 {
+
     public function filter_houses(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -75,10 +77,11 @@ class HouseController extends Controller
         $house->direction = $request->input('direction');
         $house->floor = $request->input('floor');
         $house->room_number = $request->input('room_number');
-        $house->description = $request->input('description');
+        $house->description = $request->input('estateDescription');
         $price = $request->input('price');
-        
+        $duration = $request->input('duration');
         $operation_id = $request->input('operation_id');
+        $postDescription = $request->input('postDescription');
 
         $validator = Validator::make($request->all(), [
             'location' => 'required|string',
@@ -89,7 +92,6 @@ class HouseController extends Controller
             'description' => 'string',
             'price' => 'required|integer',
             'operation_id' => 'required|integer',
-            'images' => 'required',
             'images.*' => 'required|image',
         ]);
 
@@ -115,10 +117,12 @@ class HouseController extends Controller
 
         $post->users()->attach($user->id, [
             'operation_id' => $operation_id,
+            'duration' =>  $duration,
+            'description' =>  $postDescription,
             'price' =>  $price
         ]);
         
-        return response()->json(['message' => 'House post added successfully']);
+        return redirect()->route('posts.show', ['post' => $post]);
     }
 
     
@@ -126,7 +130,8 @@ class HouseController extends Controller
     {
         $user = Auth::user();
 
-        $house = House::findOrFail($id);
+        $post = PostUser::findOrFail($id);
+        $house = House::findOrFail($post->id);
         $house->location = $request->input('location', $house->location);
         $house->space = $request->input('space', $house->space);
         $house->direction = $request->input('direction', $house->direction);
@@ -134,8 +139,9 @@ class HouseController extends Controller
         $house->room_number = $request->input('room_number', $house->room_number);
         $house->description = $request->input('description', $house->description);
         $price = $request->input('price');
-        
+        $duration = $request->input('duration');
         $operation_id = $request->input('operation_id');
+        $postDescription = $request->input('postDescription');
 
         $validator = Validator::make($request->all(), [
             'location' => 'required|string',
@@ -146,7 +152,6 @@ class HouseController extends Controller
             'description' => 'string',
             'price' => 'required|integer',
             'operation_id' => 'required|integer',
-            'images' => 'nullable',
             'images.*' => 'nullable|image',
         ]);
 
@@ -177,10 +182,12 @@ class HouseController extends Controller
         $user->posts()->syncWithoutDetaching([
             $user->id => [
                 'operation_id' => $operation_id,
-                'price' =>  $price
+                'price' =>  $price,
+                'description' =>  $postDescription,
+                'duration' =>  $duration,
             ]
         ]);
         
-        return response()->json(['message' => 'House post updated successfully']);
+        return redirect()->route('posts.show', ['post' => $post]);
     }
 }

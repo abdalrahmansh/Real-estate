@@ -14,19 +14,25 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed'
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'phone' => 'required|string',
+            'img' => 'required|image',
         ]);
 
         if ($validator->fails()) {
             return response(['errors'=>$validator->errors()->all()], 422);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
+        $path = $request->img->store('public');
+        $filename = basename($path);
+        $url = asset('storage/' . $filename);
+
+        $data = $request->except('password_confirmation');
+        $data['password'] = bcrypt($data['password']);
+        $data['img'] = $url;
+
+        $user = User::create($data);
 
         $token = $user->createToken('authToken',['user'])->plainTextToken;
         $hashedToken = hash('sha256', $token);

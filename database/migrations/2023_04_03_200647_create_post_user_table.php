@@ -18,7 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->integer('price')->nullable();
             $table->string('duration')->nullable();
-            $table->boolean('is_accepted')->default(false);
+            $table->string('description')->nullable();
+            $table->integer('is_accepted')->default(0);
             $table->timestamps();
 
             $table->foreign('post_id')
