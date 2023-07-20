@@ -41,6 +41,33 @@ class AuthController extends Controller
         return response(['user' => $user, 'access_token' => $token]);
     }
 
+    public function adminLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
+            if ($user->role !== 'admin') {
+                return response()->json([
+                    'message' => 'You are not an admin in this website',
+                ], 403);
+            }
+
+            $token = $user->createToken('auth_token', ['admin'])->plainTextToken;
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Invalid credentials',
+        ], 404);
+    }
     public function login(Request $request)
     {
         $request->validate([
@@ -58,9 +85,9 @@ class AuthController extends Controller
             ]);
         }
 
-        throw ValidationException::withMessages([
-            'email' => ['The provided credentials are incorrect.'],
-        ]);
+        return response()->json([
+            'message' => 'Invalid credentials',
+        ], 404);
     }
 
     public function logout(Request $request)
@@ -78,5 +105,3 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
 }
-
-

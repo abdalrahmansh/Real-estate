@@ -14,6 +14,7 @@ Route::middleware(['cors'])->group(function () {
     Route::post('register', [AuthController::class , 'register']);
     Route::post('login', [AuthController::class , 'login'])->name('login');
     Route::post('logout', [AuthController::class , 'logout'])->middleware(['auth:api']);
+    Route::post('admin/login', [AuthController::class , 'adminLogin'])->name('admin.login');
 
     // Routes for managing users
     Route::group(['prefix' => 'users'], function () {

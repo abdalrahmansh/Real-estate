@@ -30,6 +30,7 @@ class TestSeeder extends Seeder
             'email' => 'admin@test.com',
             'phone' => '123456789',
             'img' => $imagePath,
+            'role' => 'admin',
             'password' => bcrypt('password'),
         ]);
         $token = $user1->createToken('authToken',['admin'])->plainTextToken;
