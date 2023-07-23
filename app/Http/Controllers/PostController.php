@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use GuzzleHttp\Psr7\Message;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -49,13 +50,13 @@ class PostController extends Controller
         return response()->json($acceptedRecords);
     }
 
-    public function aUserPosts($user)
+    public function aUserPosts()
     {
-        $posts = PostUser::where('user_id', $user)
+        $posts = PostUser::where('user_id', \Illuminate\Support\Facades\Auth::id())
             // ->where('operation_id', 1)
             ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
             ->get();
-
+        // $user = \Illuminate\Support\Facades\Auth::user();
         return response()->json($posts);
     }
 
@@ -158,7 +159,7 @@ class PostController extends Controller
 
     public function reserve($post)
     {
-        $user = \Illuminate\Support\Facades\Auth::user(); // or however you get the ID of the current user
+        $user = Auth::user(); // or however you get the ID of the current user
         $existingReservation = PostUser::where('post_id', $post)->where('user_id', $user->id)->where('operation_id', 5)->first();
         if($existingReservation != null){
             return response()->json(['message' => 'You have already reserved this post']);
