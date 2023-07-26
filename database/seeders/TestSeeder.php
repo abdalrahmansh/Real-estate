@@ -136,16 +136,19 @@ class TestSeeder extends Seeder
 
         $land1 = Land::create([
             'space' => '6000',
+            'location' => 'Aleppo',
             'description' => 'description',
         ]);
 
         $land2 = Land::create([
             'space' => '3000',
+            'location' => 'Aleppo',
             'description' => 'description',
         ]);
 
         $land3 = Land::create([
             'space' => '4000',
+            'location' => 'Aleppo',
             'description' => 'description',
         ]);
 
@@ -190,18 +193,18 @@ class TestSeeder extends Seeder
         $house3->images()->saveMany([$image5, $image6, $image7]);
         $house4->images()->save($image3);
 
-        $house1->post()->save($post3);
-        $house2->post()->save($post2);
-        $house3->post()->save($post1);
+        $house1->posts()->save($post3);
+        $house2->posts()->save($post2);
+        $house3->posts()->save($post1);
         // $house1->posts()->associate($post3)->save();
 
-        $car1->post()->save($post6);
-        $car2->post()->save($post5);
-        $car3->post()->save($post4);
+        $car1->posts()->save($post6);
+        $car2->posts()->save($post5);
+        $car3->posts()->save($post4);
 
-        $land1->post()->save($post9);
-        $land2->post()->save($post8);
-        $land3->post()->save($post7);
+        $land1->posts()->save($post9);
+        $land2->posts()->save($post8);
+        $land3->posts()->save($post7);
 
 
         $post1->users()->attach($user1,[
