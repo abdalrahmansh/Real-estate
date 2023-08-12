@@ -15,6 +15,7 @@ Route::middleware(['cors'])->group(function () {
     Route::post('login', [AuthController::class , 'login'])->name('login');
     Route::post('logout', [AuthController::class , 'logout'])->middleware(['auth:api']);
     Route::post('admin/login', [AuthController::class , 'adminLogin'])->name('admin.login');
+	Route::get('/user', [AuthController::class , 'user'])->middleware(['auth:api']);
 
     // Routes for managing users
     Route::group(['prefix' => 'users'], function () {
@@ -40,7 +41,7 @@ Route::middleware(['cors'])->group(function () {
         Route::get('/', [PostController::class,'allPosts'])->middleware(['auth:api','admin']);
         
         // Get all posts that need admin review
-        Route::get('/review', [PostController::class,'postsNeedReview'])->middleware(['auth:api','admin']);
+        Route::get('/review/{estate}', [PostController::class,'postsNeedReview'])->middleware(['auth:api','admin']);
 
         // Get accepted posts
         Route::get('/accepted/{estate}', [PostController::class,'acceptedPosts']);

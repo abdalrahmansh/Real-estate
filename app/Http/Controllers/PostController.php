@@ -20,10 +20,14 @@ class PostController extends Controller
         return response()->json($allPosts);
     }
 
-    public function postsNeedReview()
+    public function postsNeedReview(Request $request)
     {
+        $estate = $this->getModel($request->estate);
         $allPosts = PostUser::with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
             ->where('post_user.is_accepted',0)
+            ->whereHas('post.postsable', function ($query) use ($estate) {
+                $query->where('postsable_type', $estate);
+            })
             ->get();
 
         return response()->json($allPosts);
