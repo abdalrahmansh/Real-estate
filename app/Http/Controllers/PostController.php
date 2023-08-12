@@ -54,11 +54,14 @@ class PostController extends Controller
         return response()->json($acceptedRecords);
     }
 
-    public function aUserPosts()
+    public function aUserPosts(Request $request)
     {
+        $estate = $this->getModel($request->estate);
         $posts = PostUser::where('user_id', \Illuminate\Support\Facades\Auth::id())
-            // ->where('operation_id', 1)
             ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+            ->whereHas('post.postsable', function ($query) use ($estate) {
+                $query->where('postsable_type', $estate);
+            })
             ->get();
         // $user = \Illuminate\Support\Facades\Auth::user();
         return response()->json($posts);

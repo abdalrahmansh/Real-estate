@@ -50,7 +50,7 @@ Route::middleware(['cors'])->group(function () {
         Route::get('/{post}', [PostController::class,'show'])->name('posts.show');
 
         // Get a user's posts
-        Route::get('/user/posts', [PostController::class,'aUserPosts'])->middleware(['auth:api']);
+        Route::get('/user/posts/{estate}', [PostController::class,'aUserPosts'])->middleware(['auth:api']);
 
         // reserve an estate
         Route::post('/reserve/{post}', [PostController::class, 'reserve'])->middleware('auth:api');
