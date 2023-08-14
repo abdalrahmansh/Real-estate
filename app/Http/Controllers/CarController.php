@@ -17,16 +17,16 @@ class CarController extends Controller
     public function filter_cars(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'min_space' => 'required|integer',
-            'max_space' => 'required|integer',
-            'color' => 'required|string',
-            'is_new' => 'required|integer',
-            'min_year' => 'required|integer',
-            'max_year' => 'required|integer',
-            'min_price' => 'required|integer',
-            'max_price' => 'required|integer',
-            'operation_id' => 'required|integer',
+            'name' => 'string',
+            'min_space' => 'integer',
+            'max_space' => 'integer',
+            'color' => 'string',
+            'is_new' => 'integer',
+            'min_year' => 'integer',
+            'max_year' => 'integer',
+            'min_price' => 'integer',
+            'max_price' => 'integer',
+            'operation_id' => 'integer',
         ]);
 
         if ($validator->fails()) {

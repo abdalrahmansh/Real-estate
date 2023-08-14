@@ -65,10 +65,10 @@ Route::middleware(['cors'])->group(function () {
         Route::post('filter/houses', [HouseController::class,'filter_houses']);
 
         // Filter cars posts
-        // Route::post('filter/cars', [PostController::class,'filter_cars']);
+        Route::post('filter/cars', [CarController::class,'filter_cars']);
 
         // Filter lands posts
-        // Route::post('filter/lands', [PostController::class,'filter_lands']);
+        Route::post('filter/lands', [LandController::class,'filter_lands']);
         
         // accept post
         Route::post('accept/{post}/{user}', [PostController::class,'accept'])->middleware(['auth:api','admin']);

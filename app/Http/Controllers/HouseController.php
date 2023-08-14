@@ -17,16 +17,16 @@ class HouseController extends Controller
     public function filter_houses(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'location' => 'required|string',
-            'min_space' => 'required|integer',
-            'max_space' => 'required|integer',
-            'direction' => 'required|string',
-            'floor' => 'required|integer',
-            'min_room_number' => 'required|integer',
-            'max_room_number' => 'required|integer',
-            'min_price' => 'required|integer',
-            'max_price' => 'required|integer',
-            'operation_id' => 'required|integer',
+            'location' => 'string',
+            'min_space' => 'integer',
+            'max_space' => 'integer',
+            'direction' => 'string',
+            'floor' => 'integer',
+            'min_room_number' => 'integer',
+            'max_room_number' => 'integer',
+            'min_price' => 'integer',
+            'max_price' => 'integer',
+            'operation_id' => 'integer',
         ]);
 
         if ($validator->fails()) {
