@@ -15,6 +15,7 @@ class PostController extends Controller
     public function allPosts()
     {
         $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
+            ->orderBy('counter', 'desc')
             ->get();
 
         return response()->json($allPosts);
@@ -28,6 +29,7 @@ class PostController extends Controller
             ->whereHas('postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
             })
+            ->orderBy('counter', 'desc')
             ->get();
 
         return response()->json($allPosts);
@@ -37,6 +39,7 @@ class PostController extends Controller
     {
         $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
             ->where('post_user.operation_id',5)
+            ->orderBy('counter', 'desc')
             ->get();
 
         return response()->json($allPosts);
@@ -49,7 +52,9 @@ class PostController extends Controller
             ->with('user', 'operation', 'postsable', 'postsable.images')
             ->whereHas('postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
-            })->get();
+            })
+            ->orderBy('counter', 'desc')
+            ->get();
         return response()->json($acceptedRecords);
     }
 
@@ -61,6 +66,7 @@ class PostController extends Controller
             ->whereHas('post.postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
             })
+            ->orderBy('counter', 'desc')
             ->get();
         // $user = \Illuminate\Support\Facades\Auth::user();
         return response()->json($posts);
@@ -68,10 +74,13 @@ class PostController extends Controller
 
     public function show($post)
     {
-        $post = PostUser::where('id', $post)
-            ->with('user', 'operation', 'postsable', 'postsable.images')
-            ->get();
+        $post = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
+        ->findOrFail($post);
 
+        // Increment the counter by 1
+        $post->counter = $post->counter + 1;
+        $post->save();
+        
         return response()->json($post);
     }
 
