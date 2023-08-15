@@ -4,49 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Land;
+use App\Models\Image;
+use App\Models\PostUser;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class LandController extends Controller
 {
-    public function index()
-    {
-        $lands = land::with('images')->get();
-        return response()->json($lands);
-    }
-
-    public function show(land $land)
-    {
-        $land->load('images');
-        return response()->json($land);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'location' => 'required',
-        ]);
-        
-        $land = land::create($request->all());
-
-        return response()->json($land, 201);
-    }
-
-    public function update(Request $request, land $land)
-    {
-        $land->update($request->all());
-
-        return response()->json($land);
-    }
-
-    public function destroy(land $land)
-    {
-        $land->delete();
-
-        return response()->json(['message' => 'land deleted successfully'], 200);
-    }
-
-
     public function filter_lands(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -87,4 +52,56 @@ class LandController extends Controller
             }
             return response()->json(['message' => 'Nothing matched the giving information'], 404);
     }
+
+    public function add_land(Request $request)
+    {
+        $user = Auth::user();
+
+        $land = new Land();
+        $land->space = $request->input('space');
+        $land->location = $request->input('location');
+        $land->description = $request->input('estateDescription');
+        $price = $request->input('price');
+        $duration = $request->input('duration');
+        $operation_id = $request->input('operation_id');
+        $postDescription = $request->input('postDescription');
+
+        $validator = Validator::make($request->all(), [
+            'space' => 'required|integer',
+            'location' => 'required|string',
+            'price' => 'required|integer',
+            'operation_id' => 'required|integer',
+            'images.*' => 'required|image',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['errors'=>$validator->errors()->all()], 422);
+        }
+
+        $images = [];
+        foreach ($request->file('images', []) as $image) {
+            $path = $image->store('public');
+            $filename = basename($path);
+            $url = asset('storage/' . $filename);
+            $imageModel = new Image(['img' => $url]);
+            $images[] = $imageModel;
+        }
+
+        $land->save();
+
+        $post = new PostUser([
+            'operation_id' => $operation_id,
+            'user_id' => $user->id,
+            'description' => $postDescription,
+            'duration' => $duration,
+            'price' => $price,
+            'post_date' => now()
+        ]);
+        $land->images()->saveMany($images);
+
+        $land->postUsers()->save($post);
+        
+        return redirect()->route('posts.show', ['post' => $post]);
+    }
+
 }

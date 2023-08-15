@@ -110,17 +110,17 @@ class HouseController extends Controller
 
         $house->save();
 
-        $post = new Post(['post_date' => now()]);
+        // $post = new Post(['post_date' => now()]);
+        $post = new PostUser([
+            'operation_id' => $operation_id,
+            'user_id' => $user->id,
+            'description' => $postDescription,
+            'duration' => $duration,
+            'price' => $price,
+        ]);
         $house->images()->saveMany($images);
 
-        $house->post()->save($post);
-
-        $post->users()->attach($user->id, [
-            'operation_id' => $operation_id,
-            'duration' =>  $duration,
-            'description' =>  $postDescription,
-            'price' =>  $price
-        ]);
+        $house->postUsers()->save($post);
         
         return redirect()->route('posts.show', ['post' => $post]);
     }
@@ -131,7 +131,7 @@ class HouseController extends Controller
         $user = Auth::user();
 
         $post = PostUser::findOrFail($id);
-        $house = House::findOrFail($post->id);
+        $house = $post->postsable;
         $house->location = $request->input('location', $house->location);
         $house->space = $request->input('space', $house->space);
         $house->direction = $request->input('direction', $house->direction);
@@ -144,14 +144,14 @@ class HouseController extends Controller
         $postDescription = $request->input('postDescription');
 
         $validator = Validator::make($request->all(), [
-            'location' => 'required|string',
-            'direction' => 'required|string',
-            'floor' => 'required|integer',
-            'space' => 'required|integer',
-            'room_number' => 'required|integer',
+            'location' => 'string',
+            'direction' => 'string',
+            'floor' => 'integer',
+            'space' => 'integer',
+            'room_number' => 'integer',
             'description' => 'string',
-            'price' => 'required|integer',
-            'operation_id' => 'required|integer',
+            'price' => 'integer',
+            'operation_id' => 'integer',
             'images.*' => 'nullable|image',
         ]);
 
@@ -176,16 +176,13 @@ class HouseController extends Controller
             $house->images()->delete();
             $house->images()->saveMany($images);
         }
-
-        $post = $house->post;
-
-        $user->posts()->syncWithoutDetaching([
-            $user->id => [
-                'operation_id' => $operation_id,
-                'price' =>  $price,
-                'description' =>  $postDescription,
-                'duration' =>  $duration,
-            ]
+    
+        $post->update([
+            'operation_id' => $operation_id,
+            'price' => $price,
+            'description' => $postDescription,
+            'duration' => $duration,
+            'user_id' => $user->id,
         ]);
         
         return redirect()->route('posts.show', ['post' => $post]);

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->morphs('postsable');
             $table->timestamp('post_date')->now();
             $table->integer('is_accepted')->default(0);
+            $table->integer('counter')->default(0);
             $table->timestamps();
 
             // $table->foreign('post_id')

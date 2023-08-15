@@ -81,7 +81,6 @@ class CarController extends Controller
             'is_new' => 'required|boolean',
             'model' => 'required|string',
             'year' => 'required|string',
-            'description' => 'string',
             'price' => 'required|integer',
             'operation_id' => 'required|integer',
             'images.*' => 'required|image',
@@ -102,17 +101,17 @@ class CarController extends Controller
 
         $car->save();
 
-        $post = new Post(['post_date' => now()]);
+        $post = new PostUser([
+            'operation_id' => $operation_id,
+            'user_id' => $user->id,
+            'description' => $postDescription,
+            'duration' => $duration,
+            'price' => $price,
+            'post_date' => now()
+        ]);
         $car->images()->saveMany($images);
 
-        $car->post()->save($post);
-
-        $post->users()->attach($user->id, [
-            'operation_id' => $operation_id,
-            'duration' =>  $duration,
-            'description' =>  $postDescription,
-            'price' =>  $price,
-        ]);
+        $car->postUsers()->save($post);
         
         return redirect()->route('posts.show', ['post' => $post]);
     }

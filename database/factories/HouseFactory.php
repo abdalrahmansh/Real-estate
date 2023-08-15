@@ -21,7 +21,7 @@ class HouseFactory extends Factory
     {
         return [
             'location' => $this->faker->city,
-            'floor' => $this->faker->word,
+            'floor' => $this->faker->numberBetween(1, 9),
             'space' => $this->faker->numberBetween(100, 500),
             'direction' => $this->faker->word,
             'description' => $this->faker->sentence,

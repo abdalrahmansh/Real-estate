@@ -60,11 +60,11 @@ class UserController extends Controller
             return response()->json(['error' => 'User not found.'], 404);
         }
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => ['required','email',Rule::unique('users')->ignore($user->id)],
-            'password' => 'required|string|min:8',
-            'phone' => 'required|string',
-            'img' => 'required|image',
+            'name' => 'string|max:255',
+            'email' => ['email',Rule::unique('users')->ignore($user->id)],
+            // 'password' => 'string|min:8',
+            'phone' => 'string',
+            'img' => 'image',
         ]);
 
         if ($validator->fails()) {
@@ -76,7 +76,7 @@ class UserController extends Controller
         $url = asset('storage/' . $filename);
 
         $data = $request->except('password_confirmation');
-        $data['password'] = bcrypt($data['password']);
+        // $data['password'] = bcrypt($data['password']);
         $data['img'] = $url;
 
         $user->update($data);

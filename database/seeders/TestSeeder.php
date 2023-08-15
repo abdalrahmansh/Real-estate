@@ -27,10 +27,14 @@ class TestSeeder extends Seeder
         $filename = 'avatar.jpg';
         $imagePath = url('storage/' . $filename);
 
+        $operation1 = Operation::create(['name' => 'Buy','description' => 'nothing']); 
+        $operation2 = Operation::create(['name' => 'Rent','description' => 'nothing']);
+        $operation3 = Operation::create(['name' => 'Reserve','description' => 'nothing']);
+
         // Create a house with dummy data
         $house = House::create([
             'location' => 'الأشرفية',
-            'floor' => 'ثالث',
+            'floor' => 3,
             'space' => '200',
             'room_number' => '4',
             'direction' => 'شرقي شمالي',
@@ -48,15 +52,15 @@ class TestSeeder extends Seeder
         ]);
 
         // Create an operation with dummy data
-        $operation = Operation::create([
-            'name' => 'buy',
-            // Add other operation attributes and their values
-        ]);
+        // $operation = Operation::create([
+        //     'name' => 'buy',
+        //     // Add other operation attributes and their values
+        // ]);
 
         // Create the relation in the PostUser model with dummy data
         $postUser = PostUser::create([
             'user_id' => $user->id,
-            'operation_id' => $operation->id,
+            'operation_id' => $operation1->id,
             'postsable_type' => 'App\Models\House', // The class name of the related model
             'postsable_id' => $house->id,
             'price' => 200,
@@ -92,10 +96,6 @@ class TestSeeder extends Seeder
         //     'img' => $imagePath,
         //     'password' => bcrypt('password'),
         // ]);
-
-        $operation1 = Operation::create(['name' => 'Buy','description' => 'nothing']); 
-        $operation2 = Operation::create(['name' => 'Rent','description' => 'nothing']);
-        $operation3 = Operation::create(['name' => 'Reserve','description' => 'nothing']);
 
         // // HOUSES SECTION 
 
