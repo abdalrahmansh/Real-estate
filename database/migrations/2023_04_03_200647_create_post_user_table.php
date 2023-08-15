@@ -13,20 +13,21 @@ return new class extends Migration
     {
         Schema::create('post_user', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('post_id');
+            // $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('operation_id');
             $table->unsignedBigInteger('user_id');
             $table->integer('price')->nullable();
             $table->string('duration')->nullable();
             $table->string('description')->nullable();
+            $table->morphs('postsable');
             $table->integer('is_accepted')->default(0);
             $table->timestamps();
 
-            $table->foreign('post_id')
-                ->references('id')
-                ->on('posts')      
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            // $table->foreign('post_id')
+            //     ->references('id')
+            //     ->on('posts')      
+            //     ->onDelete('cascade')
+            //     ->onUpdate('cascade');
             
             $table->foreign('operation_id')
                 ->references('id')

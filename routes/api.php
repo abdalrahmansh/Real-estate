@@ -38,7 +38,7 @@ Route::middleware(['cors'])->group(function () {
     // Routes for managing posts
     Route::group(['prefix' => 'posts'], function () {
         // Get all posts
-        Route::get('/', [PostController::class,'allPosts'])->middleware(['auth:api','admin']);
+        Route::get('/', [PostController::class,'allPosts'])->middleware(['auth:api']);
         
         // Get all posts that need admin review
         Route::get('/review/{estate}', [PostController::class,'postsNeedReview'])->middleware(['auth:api','admin']);
@@ -71,10 +71,10 @@ Route::middleware(['cors'])->group(function () {
         Route::post('filter/lands', [LandController::class,'filter_lands']);
         
         // accept post
-        Route::post('accept/{post}/{user}', [PostController::class,'accept'])->middleware(['auth:api','admin']);
+        Route::post('accept/{post}', [PostController::class,'accept'])->middleware(['auth:api','admin']);
         
         // reject post
-        Route::post('reject/{post}/{user}', [PostController::class,'reject'])->middleware(['auth:api','admin']);
+        Route::post('reject/{post}', [PostController::class,'reject'])->middleware(['auth:api','admin']);
     });
 
     Route::post('houses/add', [HouseController::class,'add_house'])->middleware(['auth:api']);

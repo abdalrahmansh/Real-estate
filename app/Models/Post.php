@@ -12,21 +12,21 @@ class Post extends Model
 
     public $guarded = [];
 
-    public function postsable()
-    {
-        return $this->morphTo();
-    }
+    // public function postsable()
+    // {
+    //     return $this->morphTo();
+    // }
 
 
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'post_user');
-    }
+    // public function users()
+    // {
+    //     return $this->belongsToMany(User::class, 'post_user');
+    // }
 
-    public function operations()
-    {
-        return $this->belongsToMany(Operation::class, 'post_user');
-    }
+    // public function operations()
+    // {
+    //     return $this->belongsToMany(Operation::class, 'post_user');
+    // }
 
     // protected $appends = ['postsable_type'];
     

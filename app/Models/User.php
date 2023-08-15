@@ -12,9 +12,9 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    public function posts()
+    public function postUsers()
     {
-        return $this->belongsToMany(User::class, 'post_user');
+        return $this->belongsToMany(User::class);
     }
 
     /**
