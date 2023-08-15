@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Image;
 use App\Models\PostUser;
+use App\Models\PostUser;
 use App\Models\Operation;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -23,6 +24,7 @@ class TestSeeder extends Seeder
      */
     public function run(): void
     {
+
 
         $filename = 'avatar.jpg';
         $imagePath = url('storage/' . $filename);

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('post_user', function (Blueprint $table) {
             $table->id();
-            // $table->unsignedBigInteger('post_id');
+            // // $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('operation_id');
             $table->unsignedBigInteger('user_id');
             $table->integer('price')->nullable();

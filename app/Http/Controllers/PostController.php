@@ -77,6 +77,8 @@ class PostController extends Controller
 
     public function destroy($post)
     {
+        $post_user = PostUser::where('id', $post)
+            ->with('user', 'operation', 'postsable', 'postsable.images')
         $postUsers = PostUser::where('id', $post)
             ->with('user', 'operation', 'postsable', 'postsable.images')
             ->get();
