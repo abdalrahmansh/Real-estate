@@ -77,29 +77,40 @@ class PostController extends Controller
 
     public function destroy($post)
     {
-        $post_user = PostUser::where('id', $post)
+        $postUsers = PostUser::where('id', $post)
             ->with('user', 'operation', 'postsable', 'postsable.images')
             ->get();
 
-        // if(empty($post_user)){
-            // return response()->json($post_user, 404);
-        // }
-        // loop through each post
-        foreach ($post_user as $post) {
-            // delete the related images from the storage
-            foreach ($post->postsable->images as $image) {
-                Storage::delete($image->path);
-            }
-            // delete the related images
-            $post->postsable->images()->delete();
+        foreach ($postUsers as $postUser) {
+            $postsable = $postUser->postsable;
 
-            // delete the post
-            $post->delete();
+            if ($postsable) {
+                $images = $postsable->images;
+
+                if ($images) {
+                    foreach ($images as $image) {
+                        if ($image->img) {
+                            $urlParts = parse_url($image->img);
+                            if (isset($urlParts['path'])) {
+                                $filePath = ltrim($urlParts['path'], '/');
+                                Storage::delete($filePath);
+                            }                        
+                        }
+                    }
+
+                    // Delete related images from database
+                    $postsable->images()->delete();
+                }
+
+                // Delete the postable 
+                $postsable->delete();
+            }
+
+            // Delete the PostUser record
+            $postUser->delete();
         }
 
-            return response()->json(['message' => 'Post and all related records have been deleted.']);
-            // return response()->json(['error' => 'Nothing deleted']);
-        // return response()->json(['message' => 'post deleted successfully'], 200);
+        return response()->json(['message' => 'Posts and all related records have been deleted.']);
     }
 
     public function accept($post)

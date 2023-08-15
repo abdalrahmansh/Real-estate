@@ -9,9 +9,9 @@ class Land extends Model
 {
     use HasFactory;
 
-    public function posts()
+    public function postUsers()
     {
-        return $this->morphMany(Post::class, 'postsable');
+        return $this->morphMany(PostUser::class, 'postsable');
     }
     
     public function images()
