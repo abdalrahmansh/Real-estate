@@ -13,9 +13,9 @@ class PostUser extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function post()
+    public function postsable()
     {
-        return $this->belongsTo(Post::class);
+        return $this->morphTo();
     }
     public function operation()
     {

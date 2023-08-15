@@ -14,7 +14,7 @@ class PostController extends Controller
 {
     public function allPosts()
     {
-        $allPosts = PostUser::with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+        $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
             ->get();
 
         return response()->json($allPosts);
@@ -23,9 +23,9 @@ class PostController extends Controller
     public function postsNeedReview(Request $request)
     {
         $estate = $this->getModel($request->estate);
-        $allPosts = PostUser::with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+        $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
             ->where('post_user.is_accepted',0)
-            ->whereHas('post.postsable', function ($query) use ($estate) {
+            ->whereHas('postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
             })
             ->get();
@@ -35,7 +35,7 @@ class PostController extends Controller
 
     public function postsNeedReviewToReserving()
     {
-        $allPosts = PostUser::with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+        $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
             ->where('post_user.operation_id',5)
             ->get();
 
@@ -46,9 +46,8 @@ class PostController extends Controller
     {
         $estate = $this->getModel($request->estate);
         $acceptedRecords = PostUser::where('is_accepted', 1)
-            // ->where('operation_id', 1)
-            ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
-            ->whereHas('post.postsable', function ($query) use ($estate) {
+            ->with('user', 'operation', 'postsable', 'postsable.images')
+            ->whereHas('postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
             })->get();
         return response()->json($acceptedRecords);
@@ -69,9 +68,8 @@ class PostController extends Controller
 
     public function show($post)
     {
-        $post = PostUser::where('post_id', $post)
-            // ->where('operation_id', 1)
-            ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+        $post = PostUser::where('id', $post)
+            ->with('user', 'operation', 'postsable', 'postsable.images')
             ->get();
 
         return response()->json($post);
@@ -79,8 +77,8 @@ class PostController extends Controller
 
     public function destroy($post)
     {
-        $post_user = PostUser::where('post_id', $post)
-            ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
+        $post_user = PostUser::where('id', $post)
+            ->with('user', 'operation', 'postsable', 'postsable.images')
             ->get();
 
         // if(empty($post_user)){
@@ -89,16 +87,13 @@ class PostController extends Controller
         // loop through each post
         foreach ($post_user as $post) {
             // delete the related images from the storage
-            foreach ($post->post->postsable->images as $image) {
+            foreach ($post->postsable->images as $image) {
                 Storage::delete($image->path);
             }
             // delete the related images
-            $post->post->postsable->images()->delete();
+            $post->postsable->images()->delete();
 
             // delete the post
-            $post->post->delete();
-
-            // delete the post-user relationship
             $post->delete();
         }
 
@@ -107,56 +102,39 @@ class PostController extends Controller
         // return response()->json(['message' => 'post deleted successfully'], 200);
     }
 
-    public function accept($post, $user)
+    public function accept($post)
     {
-        User::find($user)
-        ->posts()
-        ->wherePivot('user_id', $user)
-        ->wherePivot('post_id', $post)
-        ->update(['is_accepted' => 1]);
         $post = PostUser::find($post);
+        $post->update(['is_accepted' => 1]);
         // Send a notification to the author
         $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'accepted'));
 
         return response()->json(['message' => 'Post accepted successfully']);
     }
-    public function reject($post, $user)
+    public function reject($post)
     {
-        User::find($user)
-        ->posts()
-        ->wherePivot('user_id', $user)
-        ->wherePivot('post_id', $post)
-        ->update(['is_accepted' => -1]);
         $post = PostUser::find($post);
-    
+        $post->update(['is_accepted' => -1]);    
         // Send a notification to the post author
         $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'rejected'));
     
         return response()->json(['message' => 'Post rejected successfully']);
     }
 
-    public function acceptReserve($post, $user)
+    public function acceptReserve($post)
     {
-        User::find($user)
-        ->posts()
-        ->wherePivot('user_id', $user)
-        ->wherePivot('post_id', $post)
-        ->update(['is_accepted' => 1]);
         $post = PostUser::find($post);
+        $post->update(['is_reserved' => 1]);
         // Send a notification to the author
         $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'accepted'));
 
         return response()->json(['message' => 'Post accepted successfully']);
     }
 
-    public function rejectReserve($post, $user)
+    public function rejectReserve($post)
     {
-        User::find($user)
-        ->posts()
-        ->wherePivot('user_id', $user)
-        ->wherePivot('post_id', $post)
-        ->update(['is_accepted' => -1]);
         $post = PostUser::find($post);
+        $post->update(['is_reserved' => -1]);
     
         // Send a notification to the post author
         $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'rejected'));
@@ -167,13 +145,13 @@ class PostController extends Controller
     public function reserve($post)
     {
         $user = Auth::user(); // or however you get the ID of the current user
-        $existingReservation = PostUser::where('post_id', $post)->where('user_id', $user->id)->where('operation_id', 5)->first();
+        $existingReservation = PostUser::where('id', $post)->where('user_id', $user->id)->where('operation_id', 4)->first();
         if($existingReservation != null){
             return response()->json(['message' => 'You have already reserved this post']);
         }
-        $post = PostUser::where('post_id', $post)->first();
+        $post = PostUser::find($post);
         $newPost = $post->replicate();
-        $newPost->operation_id = 5;
+        $newPost->operation_id = 4;
         $newPost->is_accepted = 0;
         $newPost->user_id = $user->id;
         $newPost->save();

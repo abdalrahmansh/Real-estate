@@ -9,9 +9,9 @@ class Operation extends Model
 {
     use HasFactory;
 
-    public function posts()
+    public function postUsers()
     {
-        return $this->belongsToMany(Post::class, 'post_user');
+        return $this->belongsToMany(PostUser::class,);
     }
     public $guarded = [];
 
