@@ -63,7 +63,7 @@ Route::middleware(['cors'])->group(function () {
         Route::post('/reserve/{post}', [PostController::class, 'reserve'])->middleware('auth:api');
 
         // Get all posts that need admin review for reserving
-        Route::get('/review/reserve', [PostController::class,'postsNeedReviewToReserving'])->middleware(['auth:api','admin']);
+        Route::get('/review/reserve/posts/{estate}', [PostController::class,'postsNeedReviewToReserving'])->middleware(['auth:api','admin']);
 
         // Delete a post
         Route::post('delete/{post}', [PostController::class,'destroy'])->middleware(['auth:api']);
@@ -82,6 +82,12 @@ Route::middleware(['cors'])->group(function () {
         
         // reject post
         Route::post('reject/{post}', [PostController::class,'reject'])->middleware(['auth:api','admin']);
+        
+        // accept post reserve
+        Route::post('accept/reserve/{post}', [PostController::class,'acceptReserve'])->middleware(['auth:api','admin']);
+        
+        // reject post reserve
+        Route::post('reject/reserve/{post}', [PostController::class,'rejectReserve'])->middleware(['auth:api','admin']);
     });
 
     Route::post('houses/add', [HouseController::class,'add_house'])->middleware(['auth:api']);

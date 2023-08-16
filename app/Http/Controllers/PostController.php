@@ -41,10 +41,14 @@ class PostController extends Controller
         return response()->json($allPosts);
     }
 
-    public function postsNeedReviewToReserving()
+    public function postsNeedReviewToReserving(Request $request)
     {
+        $estate = $this->getModel($request->estate);
         $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
             ->where('post_user.operation_id',3)
+            ->whereHas('postsable', function ($query) use ($estate) {
+                $query->where('postsable_type', $estate);
+            })
             ->orderBy('counter', 'desc')
             ->get();
 
