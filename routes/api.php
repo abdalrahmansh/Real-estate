@@ -49,6 +49,9 @@ Route::middleware(['cors'])->group(function () {
         // Get a specific post
         Route::get('/{post}', [PostController::class,'show'])->name('posts.show');
 
+        // Get a specific post
+        Route::get('/admin/{post}', [PostController::class,'showWithoutCounter'])->name('posts.showWithoutCounter');
+
         // Get a user's posts
         Route::get('/user/posts/{estate}', [PostController::class,'aUserPosts'])->middleware(['auth:api']);
 

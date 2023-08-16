@@ -38,7 +38,7 @@ class PostController extends Controller
     public function postsNeedReviewToReserving()
     {
         $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
-            ->where('post_user.operation_id',5)
+            ->where('post_user.operation_id',4)
             ->orderBy('counter', 'desc')
             ->get();
 
@@ -72,6 +72,14 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
+    public function showWithoutCounter($post)
+    {
+        $post = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
+        ->findOrFail($post);
+        
+        return response()->json($post);
+    }
+    
     public function show($post)
     {
         $post = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
