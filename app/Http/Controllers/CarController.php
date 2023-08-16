@@ -18,8 +18,6 @@ class CarController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string',
-            'min_space' => 'integer',
-            'max_space' => 'integer',
             'color' => 'string',
             'is_new' => 'integer',
             'min_year' => 'integer',
@@ -42,21 +40,27 @@ class CarController extends Controller
 
         $data = DB::table('users')
             ->join('post_user', 'users.id',  'post_user.user_id')
-            ->join('posts', 'post_user.post_id', 'posts.id')
-            ->join('cars', 'cars.id', 'posts.postsable_id')
-            ->where('posts.postsable_type', 'App\Models\House')
+            ->join('cars', 'cars.id', 'post_user.postsable_id')
+            ->where('post_user.postsable_type', 'App\Models\Car')
             ->join('operations', 'post_user.operation_id', 'operations.id')
-            ->select('users.name AS TheOwner','cars.name','cars.year','cars.name','cars.model','cars.description', DB::raw('DATE_FORMAT(posts.post_date, "%d") AS post_day'))
+            ->select('post_user.id')
             ->where('post_user.operation_id', $operationId)
             ->where('cars.name', 'like', '%'.$name.'%')
             ->whereBetween('cars.year', [$min_year, $max_year])
             ->whereBetween('post_user.price', [$min_price, $max_price])
             ->get();
 
-            if(empty($data)){
-                return response()->json($data);
-            }
-            return response()->json(['message' => 'Nothing matched the giving information'], 404);
+        if ($data->isEmpty()) {
+            return response()->json(['message' => 'Nothing matched the given information'], 404);
+        }
+    
+        $postIds = $data->pluck('id'); // Extract IDs from the query result
+    
+        $posts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
+            ->where('id', $postIds)
+            ->get();
+        
+        return response()->json($posts);
     }
     
     public function add_car(Request $request)

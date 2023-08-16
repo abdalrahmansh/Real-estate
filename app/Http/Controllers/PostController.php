@@ -22,9 +22,16 @@ class PostController extends Controller
         return response()->json($allPosts);
     }
 
-    public function deletedPosts()
+    public function deletedPosts(Request $request)
     {
-        $posts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')->onlyTrashed()->get();
+        $estate = $this->getModel($request->estate);
+
+        $posts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
+            ->whereHas('postsable', function ($query) use ($estate) {
+                $query->where('postsable_type', $estate);
+            })
+            ->onlyTrashed()
+            ->get();
         return response()->json($posts);
     }
 

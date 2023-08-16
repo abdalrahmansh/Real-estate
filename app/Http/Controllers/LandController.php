@@ -36,21 +36,27 @@ class LandController extends Controller
 
         $data = DB::table('users')
             ->join('post_user', 'users.id',  'post_user.user_id')
-            ->join('posts', 'post_user.post_id', 'posts.id')
-            ->join('lands', 'lands.id', 'posts.postsable_id')
-            ->where('posts.postsable_type', 'App\Models\Land')
+            ->join('lands', 'lands.id', 'post_user.postsable_id')
+            ->where('post_user.postsable_type', 'App\Models\Land')
             ->join('operations', 'post_user.operation_id', 'operations.id')
-            ->select('users.name AS TheOwner','lands.space','lands.description',)
+            ->select('post_user.id')
             ->where('post_user.operation_id', $operationId)
             ->where('lands.location', 'like', '%'.$location.'%')
             ->whereBetween('lands.space', [$min_space, $max_space])
             ->whereBetween('post_user.price', [$min_price, $max_price])
             ->get();
 
-            if(empty($data)){
-                return response()->json($data);
-            }
-            return response()->json(['message' => 'Nothing matched the giving information'], 404);
+        if ($data->isEmpty()) {
+            return response()->json(['message' => 'Nothing matched the given information'], 404);
+        }
+    
+        $postIds = $data->pluck('id'); // Extract IDs from the query result
+    
+        $posts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
+            ->whereIn('id', $postIds)
+            ->where('is_accepted', 1)
+            ->get();
+            return response()->json($posts);
     }
 
     public function add_land(Request $request)

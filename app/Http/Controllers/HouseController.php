@@ -46,25 +46,32 @@ class HouseController extends Controller
 
         $data = DB::table('users')
             ->join('post_user', 'users.id',  'post_user.user_id')
-            ->join('posts', 'post_user.post_id', 'posts.id')
-            ->join('houses', 'houses.id', 'posts.postsable_id')
-            ->where('posts.postsable_type', 'App\Models\House')
+            ->join('houses', 'houses.id', 'post_user.postsable_id')
+            ->where('post_user.postsable_type', 'App\Models\House')
             ->join('operations', 'post_user.operation_id', 'operations.id')
-            ->select('users.name AS The Owner','houses.location','houses.space','houses.direction','houses.floor','houses.room_number','houses.description', DB::raw('DATE_FORMAT(posts.post_date, "%d") AS post_day'))
+            ->select('post_user.id')
             ->where('post_user.operation_id', $operationId)
             ->where('houses.location', 'like', '%'.$location.'%')
             ->whereBetween('houses.space', [$min_space, $max_space])
             ->where('houses.direction', 'like', '%'.$direction.'%')
-            ->where('houses.floor', 'like', '%'.$floor.'%')
+            ->where('houses.floor', $floor)
             ->where('houses.direction', 'like', '%'.$direction.'%')
             ->whereBetween('houses.room_number', [$min_room_number, $max_room_number])
             ->whereBetween('post_user.price', [$min_price, $max_price])
             ->get();
 
-            if(empty($data)){
-                return response()->json($data);
-            }
-            return response()->json(['message' => 'Nothing matched the giving information'], 404);
+        if ($data->isEmpty()) {
+            return response()->json(['message' => 'Nothing matched the given information'], 404);
+        }
+    
+        $postIds = $data->pluck('id'); // Extract IDs from the query result
+    
+        $posts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
+            ->whereIn('id', $postIds)
+            ->where('is_accepted', 1)
+            ->get();
+        
+        return response()->json($posts);
     }
     
     public function add_house(Request $request)

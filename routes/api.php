@@ -51,7 +51,7 @@ Route::middleware(['cors'])->group(function () {
         Route::get('/{post}', [PostController::class,'show'])->name('posts.show');
 
         // Get a specific post
-        Route::get('/admin/deleted/posts', [PostController::class,'deletedPosts'])->name('posts.deleted');
+        Route::get('/admin/deleted/posts/{estate}', [PostController::class,'deletedPosts'])->name('posts.deleted');
         
         // Get a specific post
         Route::get('/admin/{post}', [PostController::class,'showWithoutCounter'])->name('posts.showWithoutCounter');
