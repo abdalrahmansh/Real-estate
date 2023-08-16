@@ -23,7 +23,7 @@ class PostController extends Controller
 
     public function deletedPosts()
     {
-        $posts = PostUser::onlyTrashed()->get();
+        $posts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')->onlyTrashed()->get();
         return response()->json($posts);
     }
 
@@ -44,7 +44,7 @@ class PostController extends Controller
     public function postsNeedReviewToReserving()
     {
         $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
-            ->where('post_user.operation_id',4)
+            ->where('post_user.operation_id',3)
             ->orderBy('counter', 'desc')
             ->get();
 
@@ -158,22 +158,22 @@ class PostController extends Controller
     public function acceptReserve($post)
     {
         $post = PostUser::find($post);
-        $post->update(['is_reserved' => 1]);
+        $post->update(['is_accepted' => 1]);
         // Send a notification to the author
         $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'accepted'));
 
-        return response()->json(['message' => 'Post accepted successfully']);
+        return response()->json(['message' => 'Reservation accepted successfully']);
     }
 
     public function rejectReserve($post)
     {
         $post = PostUser::find($post);
-        $post->update(['is_reserved' => -1]);
+        $post->update(['is_accepted' => -1]);
     
         // Send a notification to the post author
         $post->user->notify(new \App\Notifications\PostStatusNotification($post, 'rejected'));
     
-        return response()->json(['message' => 'Post rejected successfully']);
+        return response()->json(['message' => 'Reservation rejected successfully']);
     }
 
     public function reserve($post)
@@ -183,13 +183,13 @@ class PostController extends Controller
         if($existingReservation != null){
             return response()->json(['message' => 'You have already reserved this post']);
         }
-        $post = PostUser::find($post);
+        $post = PostUser::findOrFail($post);
         $newPost = $post->replicate();
-        $newPost->operation_id = 4;
+        $newPost->operation_id = 3;
         $newPost->is_accepted = 0;
         $newPost->user_id = $user->id;
         $newPost->save();
-        return response()->json(['message' => 'Post reserved successfully']);
+        return response()->json(['message' => $newPost]);
     }
 
     protected function getModel(string $modelType): string
