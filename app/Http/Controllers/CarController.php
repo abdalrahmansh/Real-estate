@@ -122,13 +122,13 @@ class CarController extends Controller
         $user = Auth::user();
 
         $post = PostUser::findOrFail($id);
-        $car = Car::findOrFail($post->id);
+        $car = $post->postsable;
         $car->name = $request->input('name', $car->name);
         $car->model = $request->input('model', $car->model);
         $car->color = $request->input('color', $car->color);
         $car->is_new = $request->input('is_new', $car->is_new);
         $car->year = $request->input('year', $car->year);
-        $car->description = $request->input('description', $car->description);
+        $car->description = $request->input('estateDescription', $car->description);
         $price = $request->input('price');
         $duration = $request->input('duration');
         $operation_id = $request->input('operation_id');
@@ -168,15 +168,12 @@ class CarController extends Controller
             $car->images()->saveMany($images);
         }
 
-        $post = $car->post;
-
-        $user->posts()->syncWithoutDetaching([
-            $user->id => [
-                'operation_id' => $operation_id,
-                'price' =>  $price,
-                'description' =>  $postDescription,
-                'duration' =>  $duration,
-            ]
+        $post->update([
+            'operation_id' => $operation_id,
+            'description' => $postDescription  ?? null,
+            'duration' => $duration  ?? null,
+            'user_id' => $user->id,
+            'price' => $price,
         ]);
         
         return redirect()->route('posts.show', ['post' => $post]);

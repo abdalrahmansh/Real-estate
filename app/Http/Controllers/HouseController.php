@@ -137,7 +137,7 @@ class HouseController extends Controller
         $house->direction = $request->input('direction', $house->direction);
         $house->floor = $request->input('floor', $house->floor);
         $house->room_number = $request->input('room_number', $house->room_number);
-        $house->description = $request->input('description', $house->description);
+        $house->description = $request->input('estateDescription', $house->description);
         $price = $request->input('price');
         $duration = $request->input('duration');
         $operation_id = $request->input('operation_id');
@@ -179,10 +179,10 @@ class HouseController extends Controller
     
         $post->update([
             'operation_id' => $operation_id,
-            'price' => $price,
-            'description' => $postDescription,
-            'duration' => $duration,
+            'description' => $postDescription ?? null,
+            'duration' => $duration ?? null,
             'user_id' => $user->id,
+            'price' => $price,
         ]);
         
         return redirect()->route('posts.show', ['post' => $post]);
