@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\HouseController;
+use App\Models\PostUser;
 
 Route::middleware(['cors'])->group(function () {
     
@@ -49,6 +50,9 @@ Route::middleware(['cors'])->group(function () {
         // Get a specific post
         Route::get('/{post}', [PostController::class,'show'])->name('posts.show');
 
+        // Get a specific post
+        Route::get('/admin/deleted/posts', [PostController::class,'deletedPosts'])->name('posts.deleted');
+        
         // Get a specific post
         Route::get('/admin/{post}', [PostController::class,'showWithoutCounter'])->name('posts.showWithoutCounter');
 

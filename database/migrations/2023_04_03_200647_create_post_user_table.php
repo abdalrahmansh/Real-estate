@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('duration')->nullable();
             $table->string('description')->nullable();
             $table->morphs('postsable');
+            $table->softDeletes();
             $table->timestamp('post_date')->now();
             $table->integer('is_accepted')->default(0);
             $table->integer('counter')->default(0);

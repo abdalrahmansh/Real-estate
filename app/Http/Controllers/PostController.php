@@ -21,6 +21,12 @@ class PostController extends Controller
         return response()->json($allPosts);
     }
 
+    public function deletedPosts()
+    {
+        $posts = PostUser::onlyTrashed()->get();
+        return response()->json($posts);
+    }
+
     public function postsNeedReview(Request $request)
     {
         $estate = $this->getModel($request->estate);
