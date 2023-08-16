@@ -117,7 +117,7 @@ class AuthController extends Controller
 		);
 
 		if($status === Password::RESET_LINK_SENT) {
-			return response()->json(['message' => __($status)], 200);
+            return redirect()->route('reset.password.success');
 		} else {
 			throw ValidationException::withMessages([
 				'email' => __($status)
@@ -126,11 +126,15 @@ class AuthController extends Controller
 	}
 
 	public function resetPassword(Request $request) {
-		$request->validate([
+		$validator = Validator::make($request->all(), [
 			'token' => 'required',
 			'email' => 'required|email',
 			'password' => 'required|min:8|confirmed',
 		]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with(['errors'=>$validator->errors()->all()], 422);
+        }
 
 		$status = Password::reset(
 			$request->only('email', 'password', 'password_confirmation', 'token'),
@@ -171,6 +175,11 @@ class AuthController extends Controller
     public function newPasswordSuccess()
     {
         return view('password.success');
+    }
+
+    public function resetPasswordSuccess()
+    {
+        return view('password.emailed');
     }
 
 }

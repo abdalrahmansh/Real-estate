@@ -14,7 +14,7 @@
   <body>
     <div class="container">
       <div class="login-content">
-        <form method="POST" action="{{ route('password.reset') }}">
+        <form method="POST" action="{{ route('new.password') }}">
           @csrf
           <span class="title">يرجى إدخال بريدك الإلكتروني للبحث عن حسابك.</span>
           <div class="div">

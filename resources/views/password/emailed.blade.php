@@ -17,7 +17,7 @@
     <div class="container">
         <div class="login-content">
             <div class="card-body">
-                <span class="title">تم تغيير كلمة مرروك بنجاح</span>
+                <span class="title">تم ارسال ايميل تغيير كلمة المرور بنجاح</span>
             </div>
         </div>
     </div>
