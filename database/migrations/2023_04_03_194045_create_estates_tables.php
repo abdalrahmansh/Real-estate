@@ -37,7 +37,7 @@ return new class extends Migration
             $table->id();
             $table->string('space');
             $table->string('location');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

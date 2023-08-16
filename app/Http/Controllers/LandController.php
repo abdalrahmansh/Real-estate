@@ -104,4 +104,59 @@ class LandController extends Controller
         return redirect()->route('posts.show', ['post' => $post]);
     }
 
+    public function update_land(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        $post = PostUser::findOrFail($id);
+        $land = $post->postsable;
+        $land->space = $request->input('space');
+        $land->location = $request->input('location');
+        $land->description = $request->input('estateDescription');
+        $price = $request->input('price');
+        $duration = $request->input('duration');
+        $operation_id = $request->input('operation_id');
+        $postDescription = $request->input('postDescription');
+
+        $validator = Validator::make($request->all(), [
+            'space' => 'integer',
+            'location' => 'string',
+            'price' => 'integer',
+            'operation_id' => 'integer',
+            'images.*' => 'nullable|image',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['errors'=>$validator->errors()->all()], 422);
+        }
+
+        $images = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('public');
+                $filename = basename($path);
+                $url = asset('storage/' . $filename);
+                $imageModel = new Image(['img' => $url]);
+                $images[] = $imageModel;
+            }
+        }
+
+        $land->save();
+
+        if (!empty($images)) {
+            $land->images()->delete();
+            $land->images()->saveMany($images);
+        }
+
+        $post->update([
+            'operation_id' => $operation_id,
+            'description' => $postDescription  ?? null,
+            'duration' => $duration  ?? null,
+            'user_id' => $user->id,
+            'price' => $price,
+        ]);
+        
+        return redirect()->route('posts.show', ['post' => $post]);
+    }
+
 }

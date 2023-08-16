@@ -62,7 +62,7 @@ Route::middleware(['cors'])->group(function () {
         Route::get('/review/reserve', [PostController::class,'postsNeedReviewToReserving'])->middleware(['auth:api','admin']);
 
         // Delete a post
-        Route::post('delete/{post}', [PostController::class,'destroy'])->middleware(['auth:api', 'post.ownership']);
+        Route::post('delete/{post}', [PostController::class,'destroy'])->middleware(['auth:api']);
 
         // Filter houses posts
         Route::post('filter/houses', [HouseController::class,'filter_houses']);
@@ -87,7 +87,7 @@ Route::middleware(['cors'])->group(function () {
     Route::post('cars/edit/{post}', [CarController::class,'update_car'])->middleware(['auth:api', 'post.ownership']);
 
     Route::post('lands/add', [LandController::class,'add_land'])->middleware(['auth:api']);
-    Route::post('lands/edit/{post}', [LandController::class,'update_land'])->middleware(['auth:api', 'post.ownership']);
+    Route::post('lands/edit/{post}', [LandController::class,'update_land'])->middleware(['auth:api']);
 
 
     Route::get('/notifications', [NotificationsController::class, 'showUnreadNotifications'])->middleware('auth:api');

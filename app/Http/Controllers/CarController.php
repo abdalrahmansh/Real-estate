@@ -135,15 +135,15 @@ class CarController extends Controller
         $postDescription = $request->input('postDescription');
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'color' => 'required|string',
-            'is_new' => 'required|boolean',
-            'model' => 'required|string',
-            'year' => 'required|string',
+            'name' => 'string',
+            'color' => 'string',
+            'is_new' => 'boolean',
+            'model' => 'string',
+            'year' => 'string',
             'description' => 'string',
-            'price' => 'required|integer',
-            'operation_id' => 'required|integer',
-            'images.*' => 'required|image',
+            'price' => 'integer',
+            'operation_id' => 'integer',
+            'images.*' => 'image',
         ]);
 
         if ($validator->fails()) {

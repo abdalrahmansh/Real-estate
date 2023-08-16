@@ -62,8 +62,8 @@ class PostController extends Controller
     {
         $estate = $this->getModel($request->estate);
         $posts = PostUser::where('user_id', \Illuminate\Support\Facades\Auth::id())
-            ->with('user', 'post', 'operation', 'post.postsable', 'post.postsable.images')
-            ->whereHas('post.postsable', function ($query) use ($estate) {
+            ->with('user', 'operation', 'postsable', 'postsable.images')
+            ->whereHas('postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
             })
             ->orderBy('counter', 'desc')
