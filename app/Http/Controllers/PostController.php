@@ -9,6 +9,7 @@ use App\Models\Post;
 use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
 
 class PostController extends Controller
 {
@@ -46,6 +47,7 @@ class PostController extends Controller
         $estate = $this->getModel($request->estate);
         $allPosts = PostUser::with('user', 'operation', 'postsable', 'postsable.images')
             ->where('post_user.operation_id',3)
+            ->where('post_user.is_accepted', 0)
             ->whereHas('postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
             })
@@ -62,6 +64,9 @@ class PostController extends Controller
             ->with('user', 'operation', 'postsable', 'postsable.images')
             ->whereHas('postsable', function ($query) use ($estate) {
                 $query->where('postsable_type', $estate);
+            })
+            ->whereHas('operation', function ($query) use ($estate) {
+                $query->where('operation_id', '!=', 3);
             })
             ->orderBy('counter', 'desc')
             ->get();
@@ -193,7 +198,7 @@ class PostController extends Controller
         $newPost->is_accepted = 0;
         $newPost->user_id = $user->id;
         $newPost->save();
-        return response()->json(['message' => $newPost]);
+        return response()->json(['message' => 'Post reserved successfully']);
     }
 
     protected function getModel(string $modelType): string
