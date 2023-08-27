@@ -27,24 +27,24 @@ class TestSeeder extends Seeder
         $filename = 'avatar.jpg';
         $imagePath = url('storage/' . $filename);
 
-        $operation1 = Operation::create(['name' => 'Buy','description' => 'nothing']); 
-        $operation2 = Operation::create(['name' => 'Rent','description' => 'nothing']);
-        $operation3 = Operation::create(['name' => 'Reserve','description' => 'nothing']);
+        $operation1 = Operation::create(['name' => 'بيع']); 
+        $operation2 = Operation::create(['name' => 'آجار']);
+        $operation3 = Operation::create(['name' => 'حجز']);
 
-        // Create a house with dummy data
-        $house = House::create([
-            'location' => 'الأشرفية',
-            'floor' => 3,
-            'space' => '200',
-            'room_number' => '4',
-            'direction' => 'شرقي شمالي',
-            'description' => 'Near of a pharmacy and a hospital, no need for fixing or any furniture, the house is ready.',
-        ]);
+        // // Create a house with dummy data
+        // $house = House::create([
+        //     'location' => 'الأشرفية',
+        //     'floor' => 3,
+        //     'space' => '200',
+        //     'room_number' => '4',
+        //     'direction' => 'شرقي شمالي',
+        //     'description' => 'Near of a pharmacy and a hospital, no need for fixing or any furniture, the house is ready.',
+        // ]);
 
         // Create a user with dummy data
         $user = User::create([
-            'name' => 'Admin',
-            'email' => 'admin@test.com',
+            'name' => 'المدير',
+            'email' => 'irshjxxj@gmail.com',
             'phone' => '123456789',
             'img' => $imagePath,
             'role' => 'admin',
@@ -58,21 +58,21 @@ class TestSeeder extends Seeder
         // ]);
 
         // Create the relation in the PostUser model with dummy data
-        $postUser = PostUser::create([
-            'user_id' => $user->id,
-            'operation_id' => $operation1->id,
-            'postsable_type' => 'App\Models\House', // The class name of the related model
-            'postsable_id' => $house->id,
-            'price' => 200,
-        ]);
+        // $postUser = PostUser::create([
+        //     'user_id' => $user->id,
+        //     'operation_id' => $operation1->id,
+        //     'postsable_type' => 'App\Models\House', // The class name of the related model
+        //     'postsable_id' => $house->id,
+        //     'price' => 200,
+        // ]);
 
         // Attach the operation to the post
         // $postUser->operations()->attach($operation);
     
 
         $user1 = User::create([
-            'name' => 'Admin',
-            'email' => 'admin2@test.com',
+            'name' => 'المدير الاحتياطي',
+            'email' => 'admin@gmail.com',
             'phone' => '123456789',
             'img' => $imagePath,
             'role' => 'admin',
@@ -336,49 +336,49 @@ class TestSeeder extends Seeder
 
         // ]);
 
-        $houses = \App\Models\House::factory()
-            ->count(5)
-            ->hasImages(3)
-            // ->hasPosts(3)
-            ->create();
+        // $houses = \App\Models\House::factory()
+        //     ->count(5)
+        //     ->hasImages(3)
+        //     // ->hasPosts(3)
+        //     ->create();
 
-        $cars = \App\Models\Car::factory()
-            ->count(5)
-            ->hasImages(3)
-            // ->hasPosts(3)
-            ->create();
+        // $cars = \App\Models\Car::factory()
+        //     ->count(5)
+        //     ->hasImages(3)
+        //     // ->hasPosts(3)
+        //     ->create();
 
-        $lands = \App\Models\Land::factory()
-            ->count(5)
-            ->hasImages(3)
-            // ->hasPosts(3)
-            ->create();
+        // $lands = \App\Models\Land::factory()
+        //     ->count(5)
+        //     ->hasImages(3)
+        //     // ->hasPosts(3)
+        //     ->create();
             
-        $users = \App\Models\User::factory()
-            ->count(3)
-            ->create();
+        // $users = \App\Models\User::factory()
+        //     ->count(3)
+        //     ->create();
 
-        $housePosts = $houses->flatMap->postUsers->pluck('id')->toArray();
-        $carPosts = $cars->flatMap->postUsers->pluck('id')->toArray();
-        $landPosts = $lands->flatMap->postUsers->pluck('id')->toArray();
+        // $housePosts = $houses->flatMap->postUsers->pluck('id')->toArray();
+        // $carPosts = $cars->flatMap->postUsers->pluck('id')->toArray();
+        // $landPosts = $lands->flatMap->postUsers->pluck('id')->toArray();
         
-        $usersWithPosts = [
-            $users[0]->id => $housePosts,
-            $users[1]->id => $carPosts,
-            $users[2]->id => $landPosts,
-        ];
+        // $usersWithPosts = [
+        //     $users[0]->id => $housePosts,
+        //     $users[1]->id => $carPosts,
+        //     $users[2]->id => $landPosts,
+        // ];
         
-        foreach ($usersWithPosts as $userId => $posts) {
-            foreach ($posts as $postId) {
-                $operation = rand(0, 1) ? $operation1 : $operation2;
-                \App\Models\PostUser::create([
-                    'user_id' => $userId,
-                    // 'post_id' => $postId,
-                    'operation_id' => $operation->id,
-                    'price' =>  random_int(1000, 9999),
-                ]);
-            }
-        }
+        // foreach ($usersWithPosts as $userId => $posts) {
+        //     foreach ($posts as $postId) {
+        //         $operation = rand(0, 1) ? $operation1 : $operation2;
+        //         \App\Models\PostUser::create([
+        //             'user_id' => $userId,
+        //             // 'post_id' => $postId,
+        //             'operation_id' => $operation->id,
+        //             'price' =>  random_int(1000, 9999),
+        //         ]);
+        //     }
+        // }
 
     }
 }

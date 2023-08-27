@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->timestamp('post_date');
-            $table->morphs('postsable');
-            $table->timestamps();
+        // Schema::create('posts', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->timestamp('post_date');
+        //     $table->morphs('postsable');
+        //     $table->timestamps();
 
-        });
+        // });
     }
 
     /**

@@ -35,14 +35,15 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        
-        $path = $request->img->store('public');
-        $filename = basename($path);
-        $url = asset('storage/' . $filename);
-
         $data = $request->except('password_confirmation');
         $data['password'] = bcrypt($data['password']);
-        $data['img'] = $url;
+        
+        if ($request->hasFile('img')) {
+            $path = $request->img->store('public');
+            $filename = basename($path);
+            $url = asset('storage/' . $filename);
+            $data['img'] = $url;
+        }
 
         $user = User::create($data);
 
@@ -62,7 +63,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
             'email' => ['email',Rule::unique('users')->ignore($user->id)],
-            // 'password' => 'string|min:8',
+            'password' => 'string|min:8',
             'phone' => 'string',
             'img' => 'image',
         ]);
@@ -71,13 +72,15 @@ class UserController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $path = $request->img->store('public');
-        $filename = basename($path);
-        $url = asset('storage/' . $filename);
-
         $data = $request->except('password_confirmation');
-        // $data['password'] = bcrypt($data['password']);
-        $data['img'] = $url;
+        $data['password'] = bcrypt($data['password']);
+        
+        if ($request->hasFile('img')) {
+            $path = $request->img->store('public');
+            $filename = basename($path);
+            $url = asset('storage/' . $filename);
+            $data['img'] = $url;
+        }
 
         $user->update($data);
 

@@ -28,13 +28,15 @@ class AuthController extends Controller
             return response(['errors'=>$validator->errors()->all()], 422);
         }
 
-        $path = $request->img->store('public');
-        $filename = basename($path);
-        $url = asset('storage/' . $filename);
-
         $data = $request->except('password_confirmation');
         $data['password'] = bcrypt($data['password']);
-        $data['img'] = $url;
+        
+        if ($request->hasFile('images')) {
+            $path = $request->img->store('public');
+            $filename = basename($path);
+            $url = asset('storage/' . $filename);
+            $data['img'] = $url;
+        }
 
         $user = User::create($data);
 
